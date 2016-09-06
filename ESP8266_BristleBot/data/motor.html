@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <link rel="stylesheet" type="text/css" href="indexstyle.css">
         <title>Main - BristleBot</title>
         <script>
-            
             function setupWebSocket() {
                 var host = window.location.hostname;
                 //var host = "192.168.4.1";
@@ -82,85 +82,16 @@
         }
         
         //window.addEventListener("load", testWebSocket, false);
-            </script>
-        
-        <style>
-            body {
-                width: 30%;
-                algn-items: center;
-                background-color: white;
-                border-style: solid;
-                border-width: 2px;
-                border-radius: 5px;
-                margin: 0 auto;
-                margin-top: 2%;
-            }
-        
-        text {
-            font-family: "Arial";
-            font-size: "14";
-        }
-        
-        #content {
-            position:absolute;
-            top:50%;
-        }
-        
-        .button {
-            background-color: #555555;
-            border: none;
-            color: white;
-            padding: 5px 10px;
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
-            font-size: 12px;
-            border-radius: 12px;
-            box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
-            transition: all 0.5s;
-            cursor: pointer;
-            margin: 5px;
-        }
-        
-        .button:hover {
-            background-color: #3e8e41;
-        }
-        
-        .button:active {
-            background-color: #3e8e41;
-            box-shadow: 0 5px #666;
-            transform: translateY(4px);
-        }
-        
-        div {
-            padding-left: 5%;
-        }
-        
-        input.vertical {
-            -webkit-appearance: slider-vertical;
-            writing-mode: bt-lr;
-        }
-        
-        </style>
-        
+        </script>
     </head>
     <body>
         <p id="content">
         <script type="text/javascript">
             setupWebSocket();
-            </script>
-        <font size="45" color="black" face="Century Gothic"><center>Bristle Bot</center></font>
+        </script>
+        <div class="title">Bristle Bot</div>
         
         <text>
-            <center>
-                <table>
-                    <tr><th align="left"><button class="button" onclick="testWebSocket()"><span>Connect</span></th>
-                        <th align="left"><button class="button" onclick="closeSocket()"><span>Disconnect</span></th></tr>
-                    <tr><button class="button" onclick="ledFn()"><span>Blink LED</span></tr>
-                    <tr><button class="button" onclick="battFn()"><span>Get Battery Voltage</span></tr>
-                    <tr><button class="button" onclick="resetFn()"><span>Stop Motors</span></tr>
-                </table>
-            </center>
             <hr color="grey" width="90%" size="1px">
             <div>
                 <table border="0">
@@ -183,11 +114,11 @@
             <hr color="grey" width="90%" size="1px">
             <center>
                 <table>
-                    <tr><th><span id="RxData"><font color="#544744" size="4%"><u>Data</u></font></span></th></tr>
-                    <tr><th>Battery Voltage: <span id="Battery">0.0</span>mV</th></tr>
-                    <!--<tr><th>Left Proximity: <span id="Left">0.0</span></th></tr>-->
-                    <!--<<tr><th>Right Proximity: <span id="Right">0.0</span></th></tr>-->
-                    <br>
+                    <tr><th align="left"><button class="button" onclick="testWebSocket()"><span>Connect</span></th>
+                        <th align="left"><button class="button" onclick="closeSocket()"><span>Disconnect</span></th></tr>
+                    <tr><button class="button" onclick="ledFn()"><span>Blink LED</span></tr>
+                    <tr><button class="button" onclick="battFn()"><span>Get Battery Voltage</span></tr>
+                    <tr><button class="button" onclick="resetFn()"><span>Stop Motors</span></tr>
                 </table>
             </center>
         </text>
