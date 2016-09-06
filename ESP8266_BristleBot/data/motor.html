@@ -100,11 +100,11 @@
                         <td><b>Motors</b></td>
                     </tr>
                     <tr>
-                        <td><span id="outputTextSteer">128</span></td>
+                        <td><span id="outputTextSteer">0</span></td>
                         <td><span id="outputTextPower">0</span></td>
                     </tr>
                     <tr>
-                        <td><input type="range" id= "inputSliderSteer" min="0" max="255" value="128" step="1" oninput="setSteer(this.value)" class="vertical" orient="vertical"/></td>
+                        <td><input type="range" id= "inputSliderSteer" min="0" max="255" value="0" step="1" oninput="setSteer(this.value)" class="vertical" orient="vertical"/></td>
                         <td><input type="range" id= "inputSliderPower" min="0" max="255" value="0" step="1" oninput="setPower(this.value)" class="vertical" orient="vertical"/></td>
                     </tr>
                     <tr>
@@ -116,9 +116,11 @@
             <hr color="grey" width="90%" size="1px">
             <center>
                 <table>
-                    <tr><button class="pushbutton" onclick="ledFn()"><span>Blink LED</span></tr>
-                    <tr><button class="pushbutton" onclick="battFn()"><span>Get Battery Voltage</span></tr>
-                    <tr><button class="pushbutton" onclick="resetFn()"><span>Stop Motors</span></tr>
+                    <tr>
+                        <td><button class="pushbutton" onclick="ledFn()"><span>Blink LED</span></td>
+                        <td><button class="pushbutton" onclick="battFn()"><span>Get Battery Voltage</span></td>
+                        <td><button class="pushbutton" onclick="resetFn()"><span>Stop Motors</span></td>
+                    </tr>
                 </table>
             </center>
         </text>
