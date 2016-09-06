@@ -11,10 +11,11 @@ body {
             margin-top: 2%;
         }
         
- div.title {
+ .title {
              <font-size: 40px;
-             color: "black";
+             color: #000000;
              font-family: "Century Gothic";
+             text-align: center;
  }
  
     a.button {
