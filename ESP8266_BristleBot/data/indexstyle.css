@@ -10,6 +10,13 @@ body {
             font-size: 14px;
             margin-top: 2%;
         }
+        
+ div.title {
+             <font-size: 40px;
+             color: "black";
+             font-family: "Century Gothic";
+ }
+ 
     a.button {
         display: inline-block;
         border-radius: 4px;
