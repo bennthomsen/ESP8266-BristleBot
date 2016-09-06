@@ -9,7 +9,11 @@ body {
             font-family: "Arial";
             font-size: 14px;
             margin-top: 2%;
-        }
+}
+
+td {
+    text-align: center;
+}
         
  .title {
              <font-size: 45px;
