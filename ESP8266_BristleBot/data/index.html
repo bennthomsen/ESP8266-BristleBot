@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Index - BristleBot</title>
+	<style>
+		body {
+			width: 30%;
+			algn-items: center;
+			background-color: white;
+			border-style: solid;
+			border-width: 2px;
+			border-radius: 5px;
+			margin: 0 auto;
+			font-family: "Arial";
+			margin-top: 2%;
+		}
+		
+		#content { 
+			 position:absolute; 
+			 top:50%; 
+		}
+
+
+		.button {
+		  display: inline-block;
+		  border-radius: 4px;
+		  background-color: #f4511e;
+		  border: none;
+		  color: #FFFFFF;
+		  text-align: center;
+		  font-size: 14px;
+		  padding: 2px;
+		  width: 50px;
+		  transition: all 0.5s;
+		  cursor: pointer;
+		  margin: 5px;
+		}
+
+		.button span {
+		  cursor: pointer;
+		  display: inline-block;
+		  position: relative;
+		  transition: 0.5s;
+		}
+
+		.button span:after {
+		  content: '>';
+		  position: absolute;
+		  opacity: 0;
+		  top: 0;
+		  right: -20px;
+		  transition: 0.5s;
+		}
+
+		.button:hover span {
+		  padding-right: 25px;
+		}
+
+		.button:hover span:after {
+		  opacity: 1;
+		  right: 0;
+		}
+		
+	</style>
+	
+	<script>
+	function testWebSocket() {
+                var host = window.location.hostname;
+                //var host = "192.168.4.1";
+                console.log("Host: " + host);
+                connection = new WebSocket("ws://" + host + ":81/");
+	}
+
+		function mainPage() {
+			var toSend = "mainpage";
+			connection.send(toSend);
+		}
+		
+		function proxWeb() {
+			var toSend = "proxweb";
+			connection.send(toSend);
+		}
+		
+		function WebSock() {
+			var toSend = "websock";
+			connection.send(toSend);
+		}
+	</script>
+</head>
+<body>
+<p id="content">
+		<script type="text/javascript">
+			testWebSocket();
+		</script>
+		<center>
+		<!--<h1>BristleBot</h1>-->
+		<br>
+		<font size="45" color="black" face="Century Gothic"><center>Bristle Bot</center></font>
+		<hr color="grey" width="90%" size="1px">
+		
+		Please choose one of the following options:
+		<br><br>
+		<table border="0">
+			<tr>
+				<td><b>Complete BristleBot page:</b></td>
+				<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+				<td><a href="start.html"><button class="button" onclick="mainPage()"><span>Go</span></button></a></td>
+			</tr>
+			<tr>
+				<td><b>Proximity Sensor Web:</b></td>
+				<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+				<td><a href="prox_sensor.html"><button class="button" onclick="proxWeb()"><span>Go</span></button></a></td>
+			</tr>
+			<tr>
+				<td><b>WebSocketServer:</b></td>
+				<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+				<td><a href="websocketserver.html"><button class="button" onclick="WebSock()"><span>Go</span></button></a></td>
+			</tr>
+		</table>
+		<hr color="grey" width="90%" size="1px">
+		<img src="logo.png" alt="UCL logo" style="width:197px; height:52px;">
+	</center>
+</p>
+</body>
+</html>

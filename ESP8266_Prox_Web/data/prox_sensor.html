@@ -1,0 +1,40 @@
+<html>
+	<head>
+	        <script>
+					function testWebSocket() {
+						//var host = window.location.hostname;
+						var host = "192.168.4.1";
+						console.log("Host: " + host);
+						connection = new WebSocket("ws://" + host + ":81/");
+
+						connection.onmessage = function(evt) {
+							console.log('Server: ', evt.data);
+							var obj = JSON.parse(evt.data);
+							if(obj.left)    document.getElementById("Left").innerHTML = obj.left;
+							if(obj.right)   document.getElementById("Right").innerHTML = obj.right;
+						};
+						connection.onerror = function(evt) {
+							console.log("ERROR: " + evt.data);
+						};
+					}
+
+				function closeSocket() {
+					connection.close();
+				}
+            </script>
+	</head>
+		<body>
+			<font size="25" color="black" face="Century Gothic"><center>Proximity Sensor</center></font>
+        
+			<script type="text/javascript">
+				testWebSocket();
+			</script>
+			<br><br>
+			<center>
+				<table border="0">
+					<tr><td><font face="Arial" size="4">Left Proximity: </font><span id="Left"><font face="Arial" size="4">0.0</font></span></th></tr>
+					<tr><td><font face="Arial" size="4">Right Proximity: </font><span id="Right"><font face="Arial" size="4">0.0</font></span></th></tr>
+				</table>
+			</center>
+		</body>
+</html>

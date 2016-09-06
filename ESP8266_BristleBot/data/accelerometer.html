@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Accelerometer - BristleBot</title>
+		<style>
+			h1 {
+              font-family: "Century Gothic";
+              font-size: 45px;
+            }
+		
+			.garden {
+			  position: relative;
+
+			  border: 5px solid #CCC;
+			  border-radius: 10px;
+			}
+
+			.ball {
+			  position: absolute;
+			  top   : 90px;
+			  left  : 90px;
+			  background: red;
+			  border-radius: 100%;
+			}
+			
+			.WebContainer {
+				width: 100%;
+				height: auto;
+			}
+		</style>
+		
+		<!-- Script that allows connection with BristleBot -->
+		<script>
+			function testWebSocket() {
+					//var host = window.location.hostname;
+					var host = "192.168.4.1";
+					console.log("Host: " + host);
+					connection = new WebSocket("ws://" + host + ":81/");
+			}
+			
+						
+			function setPower(newValue) {
+				connection.send("p"+newValue);
+			}
+			
+			function setSteer(newValue) {
+				connection.send("s"+newValue);
+			}
+		</script>
+	</head>	
+	<body>
+	<script type="text/javascript">
+		testWebSocket();
+	</script>
+		<center>
+		<h1>Accelerometer</h1>
+		<div class="WebContainer">
+			<div class="garden">
+			  <div class="ball"></div>
+			</div>
+		</div>
+
+			<pre class="output"></pre>
+		</center>
+		<script>
+			var ball   = document.querySelector('.ball');
+			var garden = document.querySelector('.garden');
+			var output = document.querySelector('.output');
+			
+			var width 	= window.innerWidth;
+			var height 	= window.innerHeight;
+          
+            if (width < height) {
+              garden.style.width   = width * 0.8 + "px";
+              garden.style.height  = width * 0.8 + "px";
+            }
+            else {
+              garden.style.width   = height * 0.55 + "px";
+              garden.style.height  = height * 0.55 + "px";
+            }
+            
+            var width_g		= garden.clientWidth;
+			var height_g 	= garden.clientHeight;
+            
+            var width_ball     = width_g * 0.1;
+            ball.style.width   = width_ball + "px";
+            ball.style.height  = width_ball + "px";
+
+			var maxX = garden.clientWidth  - ball.clientWidth;
+			var maxY = garden.clientHeight - ball.clientHeight;
+			
+			
+			function handleOrientation(event) {
+			  var y = 0;  // In degree in the range [-180,180]
+			  var x = 0; // In degree in the range [-90,90]
+			  
+			  if (height < width) {
+				x = event.beta;
+				y = event.gamma;
+			  }
+              else {
+                y = event.beta;
+                x = event.gamma;
+              }
+			  
+			  // Because we don't want to have the device upside down
+			  // We constrain the y value to the range [-90,90]
+			  if (width < height) {
+                if (y >  89) { y =  89};
+                if (y <   0) { y =   0};
+
+                if (x >  89) { x =  89};
+                if (x < -89) { x = -89};
+              }  
+              else {
+                y = y * (-1);
+                if (y >  89) { y =  89};
+                if (y <   0) { y =   0};
+                
+                if (x >  89) { y =  89};
+                if (x < -89) { y = -89};
+              }
+			  
+			  var y_r = Math.round(y);
+			  var x_r = Math.round(x);
+              
+              output.style.fontFamily = "Arial";
+              output.style.fontSize = "14";
+			  
+              output.innerHTML  = "x-coordinate: " + x_r + "\n";
+			  output.innerHTML += "y-coordinate : " + y_r + "\n";
+              
+					var power         = Math.abs(y_r - 89) * (255 / 89);
+                    var power_rounded = Math.round(power);
+                    document.getElementById("power").innerHTML = power_rounded;
+					setPower(power_rounded);
+						
+              
+					var steer			= (x_r + 89) * (255 / 178);
+					var steer_rounded	= Math.round(steer);
+					document.getElementById("steer").innerHTML = steer_rounded;
+					setSteer(steer_rounded);
+			  
+			  // To make computation easier we shift the range of 
+			  // x and y to [0,180]
+			  y += 90;
+			  x += 90;
+			  
+			  // 10 is half the size of the ball
+			  // It center the positioning point to the center of the ball
+			  ball.style.top  = (maxX*y/180 - 10) + "px";
+			  ball.style.left = (maxY*x/180 - 10) + "px";
+			}
+			
+			window.addEventListener('deviceorientation', handleOrientation);
+		</script>
+      <center>
+        <font face="Arial" size="3">Power: <span id="power"></span></font><br>
+		<font face="Arial" size="3">Steer: <span id="steer"></span></font><br>
+      </center>
+	</body>
+</html>
