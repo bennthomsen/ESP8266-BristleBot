@@ -102,12 +102,11 @@
                     
                     <tr>
                         <td><b>Left</b></td>
-                        <td><div><input type="range" id= "inputSliderSteer" min="0" max="255" value="128" step="1" oninput="setSteer(this.value)" class="vertical" orient="vertical"/><span id="outputTextSteer">128</span></div><br></td>
-                    </tr>
-                    
-                    <tr>
-                        <td><b>Power:</b></td>
-                        <td><div><input type="range" id= "inputSliderPower" min="0" max="255" value="0" step="1" oninput="setPower(this.value)" class="vertical" orient="vertical"/><span id="outputTextPower">0</span></div></td>
+                        <td><input type="range" id= "inputSliderSteer" min="0" max="255" value="128" step="1" oninput="setSteer(this.value)" class="vertical" orient="vertical"/></td>
+                        <td><span id="outputTextSteer">128</span></td>
+                        <td><b>Right</b></td>
+                        <td><input type="range" id= "inputSliderPower" min="0" max="255" value="0" step="1" oninput="setPower(this.value)" class="vertical" orient="vertical"/></td>
+                        <td><span id="outputTextPower">0</span></td>
                     </tr>
                     
                 </table>
