@@ -64,7 +64,7 @@ body {
         top:50%;
     }
     
-    .button {
+    .pushbutton {
             background-color: #555555;
             border: none;
             color: white;
@@ -80,11 +80,11 @@ body {
             margin: 5px;
         }
         
-        .button:hover {
+        .pushbutton:hover {
             background-color: #3e8e41;
         }
         
-        .button:active {
+        .pushbutton:active {
             background-color: #3e8e41;
             box-shadow: 0 5px #666;
             transform: translateY(4px);
