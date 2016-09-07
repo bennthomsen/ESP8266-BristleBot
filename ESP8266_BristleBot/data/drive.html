@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="indexstyle.css">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>BristleBot - Drive</title>
+        <script>
+            function setupWebSocket() {
+                var host = window.location.hostname;
+                //var host = "192.168.4.1";
+                console.log("Host: " + host);
+                connection = new WebSocket("ws://" + host + ":81/");
+                connection.onopen = function(evt) {
+                    console.log("CONNECTED");
+                    document.getElementById("RxData").innerHTML = "CONNECTED";
+                };
+                connection.onclose = function(evt) {
+                    console.log("DISCONNECTED");
+                    document.getElementById("RxData").innerHTML = "DISCONNECTED";
+                };
+                connection.onmessage = function(evt) {
+                    console.log('Server: ', evt.data);
+                    var obj = JSON.parse(evt.data);
+                    if (obj.led) document.getElementById("RxData").innerHTML = obj.led;
+                    if (obj.battery) document.getElementById("Battery").innerHTML = obj.battery;
+                    //if(obj.left)    document.getElementById("Left").innerHTML = obj.left;
+                    //if(obj.right)    document.getElementById("Right").innerHTML = obj.right;
+                };
+                connection.onerror = function(evt) {
+                    console.log("ERROR: " + evt.data);
+                };
+            }
+        
+        function ledFn() {
+            var toSend = "LED";
+            connection.send(toSend);
+        }
+        
+        function battFn() {
+            var toSend = "BATT";
+            connection.send(toSend);
+        }
+        
+        function resetFn() {
+            var toSend = "RESET";
+            connection.send(toSend);
+            document.getElementById("inputSliderPower").value = "0";
+            document.getElementById("outputTextPower").innerHTML="0";
+        }
+        
+        function setSteer(newValue)
+        {
+            document.getElementById("outputTextSteer").innerHTML=newValue;
+            
+            connection.send("s"+newValue);
+        }
+        
+        function setPower(newValue)
+        {
+            document.getElementById("outputTextPower").innerHTML=newValue;
+            
+            connection.send("p"+newValue);
+        }
+        
+        function updateCal(newValue)
+        {
+            var left = document.getElementById("leftMotorCal").value;
+            var right = document.getElementById("rightMotorCal").value;
+            console.log("Setting LeftCal to: " + left + " and RightCal to: " + right);
+            
+            connection.send("r" + left);
+        }
+        
+        function zerosteer(newValue)
+        {
+            document.getElementById("inputSliderSteer").value = 0;
+            document.getElementById("outputTextSteer").innerHTML=0;
+        }
+        
+        function zeropower(newValue)
+        {
+            document.getElementById("inputSliderPower").value = 0;
+            document.getElementById("outputTextPower").innerHTML=0;
+        }
+        
+        function updatePower(newValue)
+        {
+            document.getElementById("outputTextPower").innerHTML=newValue;
+        }
+        
+        function updateSteer(newValue)
+        {
+            document.getElementById("outputTextSteer").innerHTML=newValue;
+        }
+        
+        
+        function closeSocket()
+        {
+            
+            connection.close();
+        }
+        
+        //window.addEventListener("load", testWebSocket, false);
+            </script>
+        </head>
+    <body>
+        <p id="content">
+        <script type="text/javascript">
+            setupWebSocket();
+            </script>
+        <h1 class="title">BristleBot Drive</h1>
+        <hr color="grey" width="90%" size="1px">
+        <center>
+            <table>
+                <tr>
+                    <td colspan="3" style="text-align:left"><b>Motor Max Power Calibration </b></td>
+                </tr>
+                <tr>
+                    <td>Left <input type="number" id= "leftMotorCal" max="255" min="0" step="1" value="0"/></td>
+                    <td>Right <input type="number" id= "rightMotorCal" max="255" min="0" step="1" value="0"/></td>
+                    <td><button class="pushbutton" onclick="updateCal()"><span>Update</span></td>
+                    
+                </tr>
+            </table>
+            <hr color="grey" width="90%" size="1px">
+            <table  border="0px">
+                <tr>
+                    <td style="text-align:left">Max</td>
+                </tr>
+                <tr>
+                    <td style="text-align:left"><input type="range" id= "inputSliderPower" class="vertical" orient="vertical" min="0" max="100" value="0" step="1" oninput="updatePower(this.value)"/></td>
+                </tr>
+                <tr>
+                    <td style="text-align:left">Min</td>
+                </tr>
+                <tr>
+                    <td style="text-align:left">Power</td>
+            </table>
+            <table>
+                <td>Left</td>
+                <td><input type="range" id= "inputSliderSteer" class="slider-width300" min="-100" max="100" value="0" step="1" oninput="updateSteer(this.value)"/></td>
+                <td>Right</td>
+                </tr>
+            </table>
+            <hr color="grey" width="90%" size="1px">
+            <table>
+                <tr>
+                    <td><button class="pushbutton" onclick="startFn()"><span>Start</span></td>
+                    <td><button class="pushbutton" onclick="stopFn()"><span>Stop</span></td>
+                </tr>
+            </table>
+            <hr color="grey" width="90%" size="1px">
+            <img src="logo.png" alt="UCL logo" style="width:197px; height:52px;">
+                </center>
+        
+        </p>
+    </body>
+</html>
