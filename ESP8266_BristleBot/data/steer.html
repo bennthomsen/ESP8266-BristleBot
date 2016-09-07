@@ -71,6 +71,12 @@
             connection.send("r" + left);
         }
         
+        function zero(newValue)
+        {
+            document.getElementById("inputSliderSteer").value = 0;
+            document.getElementById("outputTextSteer").innerHTML=0;
+        }
+        
         function updatePower(newValue)
         {
             document.getElementById("outputTextPower").innerHTML=newValue;
@@ -111,36 +117,43 @@
                 </tr>
             </table>
             <hr color="grey" width="90%" size="1px">
-                <table>
+                <table border="0px">
                     <tr>
-                        <td colspan="4" style="text-align:left"><b>Straight Motion</b></td>
+                        <td colspan="6" style="text-align:left"><b>Straight Motion</b></td>
                     </tr>
                     <tr>
                         <td colspan="2">Duration</td>
-                        <td colspan="2">Power</td>
+                        <td></td>
+                        <td>Power</td>
                     </tr>
                     <tr>
                         <td><input type="number" id= "straightDuration" max="30000" min="0" step="100" value="0"/></td>
                         <td>ms</td>
-                        <td>Min <input type="range" id= "inputSliderPower" min="0" max="100" value="0" step="1" oninput="updatePower(this.value)"/> Max</td>
-                        <td width="60" style="text-align:right"><span id="outputTextPower">0</span> %</td>
+                        <td>Min</td>
+                        <td><input type="range" id= "inputSliderPower" min="0" max="100" value="0" step="1" oninput="updatePower(this.value)"/> Max</td>
+                        <td>Max</td>
+                        <td width="50" style="text-align:right"><span id="outputTextPower">0</span> %</td>
                     </tr>
                 </table>
                 <hr color="grey" width="90%" size="1px">
-                <table>
+                <table  border="1px">
                     <tr>
-                        <td colspan="4" style="text-align:left"><b>Steering Parameters</b></td>
-                    </tr>
-                    <tr>
-                        <td colspan="4" style="text-align:left">Duration <input type="number" id= "steerDuration" max="30000" min="0" step="100" value="0"/> ms</td>
-                    </tr>
-                    <tr>
-                    <td colspan="4" style="text-align:center">Power Differential </td>
+                        <td colspan="2" style="text-align:left"><b>Steering Parameters</b></td>
+                        <td colspan="3" style="text-align:right">Duration <input type="number" id= "steerDuration" max="30000" min="0" step="100" value="0"/> ms</td>
                     </tr>
                     <tr>
                         
-                        <td colspan="3">Left <input type="range" id= "inputSliderPower" class="lider-width300" min="-100" max="100" value="0" step="1" oninput="updateSteer(this.value)"/> Right</td>
-                        <td width="60" style="text-align:right"><span id="outputTextSteer">0</span> %</td>
+                    </tr>
+                    <tr>
+                         <td colspan="2" style="text-align:center"></td>
+                         <td style="text-align:center">Power Differential </td>
+                    </tr>
+                    <tr>
+                        <td><button class="pushbutton" onclick="zero()"><span>Zero</span></td>
+                        <td>Left</td>
+                        <td><input type="range" id= "inputSliderSteer" class="slider-width300" min="-100" max="100" value="0" step="1" oninput="updateSteer(this.value)"/></td>
+                        <td>Right</td>
+                        <td width="50" style="text-align:right"><span id="outputTextSteer">0</span> %</td>
                     </tr>
                 </table>
 
