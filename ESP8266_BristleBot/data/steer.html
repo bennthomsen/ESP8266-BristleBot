@@ -132,13 +132,14 @@
                         <td colspan="4" style="text-align:left"><b>Steering Parameters</b></td>
                     </tr>
                     <tr>
-                        <td colspan="2">Duration</td>
-                        <td colspan="2">Power Differential </td>
+                        <td colspan="4" style="text-align:left">Duration <input type="number" id= "steerDuration" max="30000" min="0" step="100" value="0"/> ms</td>
                     </tr>
                     <tr>
-                        <td><input type="number" id= "steerDuration" max="30000" min="0" step="100" value="0"/></td>
-                        <td>ms</td>
-                        <td>Left <input type="range" id= "inputSliderPower" min="-100" max="100" value="0" step="1" oninput="updateSteer(this.value)"/> Right</td>
+                    <td colspan="4" style="text-align:center">Power Differential </td>
+                    </tr>
+                    <tr>
+                        
+                        <td colspan="3">Left <input type="range" id= "inputSliderPower" class="lider-width300" min="-100" max="100" value="0" step="1" oninput="updateSteer(this.value)"/> Right</td>
                         <td width="60" style="text-align:right"><span id="outputTextSteer">0</span> %</td>
                     </tr>
                 </table>

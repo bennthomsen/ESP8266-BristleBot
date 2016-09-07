@@ -105,6 +105,14 @@ input {
             writing-mode: bt-lr;
             height: 250px;
         }
+input.slider-width300
+{
+    -webkit-appearance: none;
+    width: 100%;
+    height: 50px;
+}
+
+
 text.fixed {
     width: 100px;
 }
