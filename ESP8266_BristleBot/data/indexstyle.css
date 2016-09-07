@@ -2,9 +2,6 @@ body {
             width: 100%;
             align-items: center;
             background-color: white;
-            border-style: solid;
-            border-width: 2px;
-            border-radius: 5px;
             margin: 0 auto;
             font-family: "Arial";
             font-size: 16px;
@@ -14,9 +11,14 @@ body {
 td {
     text-align: center;
 }
+
+table {
+    width: 360px;
+    border: 0px;
+}
         
  .title {
-             <font-size: 45px;
+             font-size: 45px;
              color: black;
              font-family: Verdana;
              text-align: center;
@@ -99,3 +101,6 @@ td {
             writing-mode: bt-lr;
             height: 250px;
         }
+text.fixed {
+    width: 100px;
+}
