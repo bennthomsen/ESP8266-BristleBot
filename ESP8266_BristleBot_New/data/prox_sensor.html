@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Proximity Sensor - Bristle Bot</title>
+	        <script>
+					function testWebSocket() {
+						var host = window.location.hostname;
+						//var host = "192.168.4.1";
+						console.log("Host: " + host);
+						connection = new WebSocket("ws://" + host + ":81/");
+
+						connection.onmessage = function(evt) {
+							console.log('Server: ', evt.data);
+							var obj = JSON.parse(evt.data);
+							if(obj.left)    document.getElementById("Left").innerHTML = obj.left;
+							if(obj.right)   document.getElementById("Right").innerHTML = obj.right;
+						};
+						connection.onerror = function(evt) {
+							console.log("ERROR: " + evt.data);
+						};
+					}
+
+				function closeSocket() {
+					connection.close();
+				}
+            </script>
+			<style>
+				body {
+					width: 30%;
+					algn-items: center;
+					background-color: white;
+					border-style: solid;
+					border-width: 2px;
+					border-radius: 5px;
+					margin: 0 auto;
+					margin-top: 2%;
+				}
+				
+				#content { 
+					 position:absolute; 
+					 top:50%; 
+				}
+			</style>
+	</head>
+	<body>
+	<p id="content">
+	<script type="text/javascript">
+		testWebSocket();
+	</script>
+		<font size="25" color="black" face="Century Gothic"><center>Proximity Sensor</center></font>
+		<hr color="grey" width="90%" size="1px">
+		<center>
+			<table border="0">
+				<tr><td><font face="Arial" size="4"><br><b>Left Proximity: </b></font><span id="Left"><font face="Arial" size="4">0.0</font></span></td></tr>
+				<tr><td><font face="Arial" size="4"><b>Right Proximity: </b></font><span id="Right"><font face="Arial" size="4">0.0</font></span></td></tr>
+			</table>
+		</center>
+	</body>
+	</p>
+</html>

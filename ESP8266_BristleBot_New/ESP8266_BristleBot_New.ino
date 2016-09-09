@@ -1,7 +1,7 @@
 /* Main BristleBot Code */
 
 #define Sprintln(a) (Serial.println(a))
-#define Sprint(a) (Serial.println(a))
+#define Sprint(a) (Serial.print(a))
 
 #define RIGHT 15    // Corresponds to GPI0_5 labelled pin D1 on NodeMCU board
 #define LEFT 5    // Corresponds to GPIO_15 labelled pin D8 on NodeMCU board
@@ -13,6 +13,8 @@
 
 #define IRRXR 12    // Corresponds to GPIO12 labelled pin D6 on NodeMCU board
 #define IRRXL 14    // Corresponds to GPIO14 labelled pin D5 on NodeMCU board
+
+#define PROXIMITY_INTERVAL 1000
 
 #define HTMLINDEX "/"
 #define HTMLDRIVE "/drive.html"
@@ -34,16 +36,8 @@ String distance;
 boolean prox_sensor_run = false;
 uint8_t socketNumber;
 
-volatile int rightThreshold = 150;
-volatile int leftThreshold = 150;
-
-#include "WebServer.h"
-#include "WebSocketServer.h"
-#include "ProximityFunctions.h"
-
-
-const char *ssid = "ESPap";
-const char *password = "thereisnospoon";
+char *ssid = "BristleBot_00";
+const char *password = "uclbristlebot";
 int power = 0;
 int steer = 0;
 int leftmotor = 255;
@@ -55,35 +49,34 @@ int leftProxSlope = 0;
 int rightProxSlope = 0;
 int leftProxOffset = 0;
 int rightProxOffset = 0;
-// Create an instance of the server specify the port to listen on as an argument
+
+volatile int rightThreshold = 150;
+volatile int leftThreshold = 150;
+
+#include "WebServer.h"
+#include "WSS.h"
+#include "ProximityFunctions.h"
 
 
-//----------------------------------------------------------------------- 
+void initialisePins(void) {
+    pinMode(RIGHT,OUTPUT);
+    pinMode(LEFT,OUTPUT);
+    pinMode(REDLED,OUTPUT);
+    pinMode(BLUELED,OUTPUT);
+    pinMode(IRTX,OUTPUT);
+    pinMode(IRTXBACK,OUTPUT);
+    pinMode(REDLEDBACK,OUTPUT);
+    
+    digitalWrite(RIGHT, LOW);
+    digitalWrite(LEFT, LOW);
+    digitalWrite(IRTX, HIGH);         // Turn front IR Tx off
+    digitalWrite(IRTXBACK, HIGH);     // Turn back IR Tx off
+    digitalWrite(REDLED, HIGH);
+    digitalWrite(REDLEDBACK, HIGH);
+    digitalWrite(BLUELED, LOW);
 
-
-
-void handlestart(void) {
-  servePage("/index.html");
-}
-
-void handleDrive(void) {
-  servePage("/drive.html");
-}
-
-void handleSettings(void) {
-  servePage("/settings.html");
-}
-
-void loadLogo(void) {
-  serveImage("/logo.png");
-}
-
-void loadStyleSheet(void) {
-  serveCSS("/indexstyle.css");
-}
-
-void loadJS(void) {
-  serveJS("/scripts.js");
+    pinMode(IRRXL, INPUT_PULLUP);
+    analogWriteFreq(400);             // Set frequency for PWM
 }
 
 
@@ -98,23 +91,23 @@ void setup() {
 
 /* Create Access point on ESP8266     */ 
   WiFi.mode(WIFI_AP);
+  
+  String mac = WiFi.macAddress();
+  Sprintln("MAC address: " + mac);
+  ssid[11] = mac.charAt(15);
+  ssid[12] = mac.charAt(16);
+  Sprint("SSID: ");
+  Sprintln(ssid);
+  Sprint("Password: ");
+  Sprintln(password);
+  
   WiFi.softAP(ssid, password);
   IPAddress myIP = WiFi.softAPIP();
   Sprintln("AP IP address: " + myIP);
 
+
 /* Start the HTTP server      */
-  server.on("/",handlestart);
-  server.on("/logo.png",loadLogo);
-  server.on("/indexstyle.css",loadStyleSheet);
-  server.on("/scripts.js",loadJS);
-  server.on("/drive.html",handleDrive);
-  server.on("/settings.html",handleSettings);
-  
-  server.on("/start.html",handlestart);
-  server.on("/prox_sensor.html",handlestart);
-  server.on("/websocketserver.html",handlestart);
-  server.on("/accelerometer.html",handlestart);
-  server.onNotFound ( handleNotFound );
+  server.onNotFound(handleNotFound);
   server.begin();
   Sprintln ( "HTTP server started" );
 
@@ -149,24 +142,4 @@ void loop() {
    */  
 }
 
-void initialisePins(void) {
-    pinMode(RIGHT,OUTPUT);
-    pinMode(LEFT,OUTPUT);
-    pinMode(REDLED,OUTPUT);
-    pinMode(BLUELED,OUTPUT);
-    pinMode(IRTX,OUTPUT);
-    pinMode(IRTXBACK,OUTPUT);
-    pinMode(REDLEDBACK,OUTPUT);
-    
-    digitalWrite(RIGHT, LOW);
-    digitalWrite(LEFT, LOW);
-    digitalWrite(IRTX, HIGH);         // Turn front IR Tx off
-    digitalWrite(IRTXBACK, HIGH);     // Turn back IR Tx off
-    digitalWrite(REDLED, HIGH);
-    digitalWrite(REDLEDBACK, HIGH);
-    digitalWrite(BLUELED, LOW);
-
-    pinMode(IRRXL, INPUT_PULLUP);
-    analogWriteFreq(400);             // Set frequency for PWM
-}
 

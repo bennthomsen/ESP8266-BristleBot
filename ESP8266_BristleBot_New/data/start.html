@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Main - BristleBot</title>
+        <script>
+            
+            function testWebSocket() {
+                var host = window.location.hostname;
+                //var host = "192.168.4.1";
+                console.log("Host: " + host);
+                connection = new WebSocket("ws://" + host + ":81/");
+                connection.onopen = function(evt) {
+                    console.log("CONNECTED");
+                    document.getElementById("RxData").innerHTML = "CONNECTED";
+                };
+                connection.onclose = function(evt) {
+                    console.log("DISCONNECTED");
+                    document.getElementById("RxData").innerHTML = "DISCONNECTED";
+                };
+                connection.onmessage = function(evt) {
+                    console.log('Server: ', evt.data);
+                    var obj = JSON.parse(evt.data);
+                    if (obj.led) document.getElementById("RxData").innerHTML = obj.led;
+                    if (obj.battery) document.getElementById("Battery").innerHTML = obj.battery;
+                    //if(obj.left)    document.getElementById("Left").innerHTML = obj.left;
+                    //if(obj.right)    document.getElementById("Right").innerHTML = obj.right;
+                };
+                connection.onerror = function(evt) {
+                    console.log("ERROR: " + evt.data);
+                };
+            }
+        
+        function ledFn() {
+            var toSend = "LED";
+            connection.send(toSend);
+        }
+        
+        function battFn() {
+            var toSend = "BATT";
+            connection.send(toSend);
+        }
+        
+        function resetFn() {
+            var toSend = "RESET";
+            connection.send(toSend);
+            document.getElementById("inputSliderPower").value = "0";
+            document.getElementById("outputTextPower").innerHTML="0";
+        }
+        
+        function setSteer(newValue)
+        {
+            document.getElementById("outputTextSteer").innerHTML=newValue;
+            
+            connection.send("s"+newValue);
+        }
+        
+        function setPower(newValue)
+        {
+            document.getElementById("outputTextPower").innerHTML=newValue;
+            
+            connection.send("p"+newValue);
+        }
+        
+        function setRightThreshold(newValue)
+        {
+            document.getElementById("outputTextRight").innerHTML=newValue;
+            
+            connection.send("r"+newValue);
+        }
+        
+        function setLeftThreshold(newValue)
+        {
+            document.getElementById("outputTextLeft").innerHTML=newValue;
+            
+            connection.send("l"+newValue);
+        }
+        
+        function closeSocket()
+        {
+            
+            connection.close();
+        }
+        
+        //window.addEventListener("load", testWebSocket, false);
+            </script>
+			
+			<style>
+					body {
+						width: 30%;
+						algn-items: center;
+						background-color: white;
+						border-style: solid;
+						border-width: 2px;
+						border-radius: 5px;
+						margin: 0 auto;
+						margin-top: 2%;
+					}
+					
+					text {
+						font-family: "Arial";
+						font-size: "14";
+					}
+					
+				#content { 
+					 position:absolute; 
+					 top:50%; 
+				}
+					
+				.button {
+					background-color: #555555;
+					border: none;
+					color: white;
+					padding: 5px 10px;
+					text-align: center;
+					text-decoration: none;
+					display: inline-block;
+					font-size: 12px;
+					border-radius: 12px;
+					box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+					transition: all 0.5s;
+					cursor: pointer;
+					margin: 5px;
+				}
+				
+				.button:hover {
+					background-color: #3e8e41;
+				}
+				
+				.button:active {
+					background-color: #3e8e41;
+					box-shadow: 0 5px #666;
+					transform: translateY(4px);
+				}
+					
+					div {
+						padding-left: 5%;
+					}
+					
+			</style>
+        
+    </head>
+	<body>
+	<p id="content">
+       <font size="45" color="black" face="Century Gothic"><center>Bristle Bot</center></font>
+        
+		<text>
+		<center>
+			<table>	
+				<tr><th align="left"><button class="button" onclick="testWebSocket()"><span>Connect</span></th>
+					<th align="left"><button class="button" onclick="closeSocket()"><span>Disconnect</span></th></tr>
+						<tr><button class="button" onclick="ledFn()"><span>Blink LED</span></tr>
+							<tr><button class="button" onclick="battFn()"><span>Get Battery Voltage</span></tr>
+								<tr><button class="button" onclick="resetFn()"><span>Stop Motors</span></tr>
+			</table>
+		</center>
+		<hr color="grey" width="90%" size="1px">
+						<div>
+							<table border="0">
+								<tr>
+									<td width="40%"><b>Left Threshold:</b></td>
+									<td><div><input type="range" id= "inputSliderLeft" min="0" max="255" value="0" step="1" oninput="setLeftThreshold(this.value)" /><span id="outputTextLeft">0</span></div><br></td>
+								</tr>
+								
+								<tr>
+									<td><b>Right Threshold:</b></td>
+									<td><div><input type="range" id= "inputSliderRight" min="0" max="255" value="0" step="1" oninput="setRightThreshold(this.value)" /><span id="outputTextRight">0</span></div><br></td>
+								</tr>
+								
+								<tr>
+									<td><b>Steer:</b></td>
+									<td><div><input type="range" id= "inputSliderSteer" min="0" max="255" value="128" step="1" oninput="setSteer(this.value)" /><span id="outputTextSteer">128</span></div><br></td>
+								</tr>
+								
+								<tr>
+									<td><b>Power:</b></td>
+									<td><div><input type="range" id= "inputSliderPower" min="0" max="255" value="0" step="1" oninput="setPower(this.value)" /><span id="outputTextPower">0</span></div></td>
+								</tr>
+								
+							</table>
+						</div>	
+								<hr color="grey" width="90%" size="1px">
+								<center>
+									<table>
+										<tr><th><span id="RxData"><font color="#544744" size="4%"><u>Data</u></font></span></th></tr>
+										<tr><th>Battery Voltage: <span id="Battery">0.0</span>mV</th></tr>
+										<!--<tr><th>Left Proximity: <span id="Left">0.0</span></th></tr>-->
+										<!--<<tr><th>Right Proximity: <span id="Right">0.0</span></th></tr>-->
+										<br>
+									</table>
+								</center>
+		</text>
+	</p>
+	</body>
+</html>

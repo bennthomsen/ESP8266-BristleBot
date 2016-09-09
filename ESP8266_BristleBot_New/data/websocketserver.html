@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>WebSocketServer - BristleBot</title>
+		<style>
+			body {
+			width: 30%;
+			algn-items: center;
+			background-color: white;
+			border-style: solid;
+			border-width: 2px;
+			border-radius: 5px;
+			margin: 0 auto;
+			font-family: "Arial";
+			margin-top: 2%;
+			}
+			
+			#content { 
+				 position:absolute; 
+				 top:50%; 
+			}
+			
+			h1 {
+			font-family: "Century Gothic";
+			font-size: 40px;
+			font-weight: normal;
+			}
+			
+			table {
+			padding-left: 10%;
+			}
+			
+			.button {
+						background-color: #555555;
+						border: none;
+						color: white;
+						padding: 5px 10px;
+						text-align: center;
+						text-decoration: none;
+						display: inline-block;
+						font-size: 12px;
+						border-radius: 12px;
+						box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+						transition: all 0.5s;
+						cursor: pointer;
+						margin: 5px;
+					}
+					
+					.button:hover {
+						background-color: #3e8e41;
+					}
+					
+					.button:active {
+						background-color: #3e8e41;
+						box-shadow: 0 5px #666;
+						transform: translateY(4px);
+					}
+		</style>
+		
+		<script>
+			function testWebSocket() {
+                var host = window.location.hostname;
+                //var host = "192.168.4.1";
+                console.log("Host: " + host);
+                connection = new WebSocket("ws://" + host + ":81/");
+				
+				document.getElementById("ipadd").innerHTML = host;
+				
+				connection.onmessage = function(evt) {
+                    console.log('Server: ', evt.data);
+                    var obj = JSON.parse(evt.data);
+                    if (obj.led) 		document.getElementById("Led").innerHTML = obj.led;
+                    if (obj.battery) 	document.getElementById("Battery").innerHTML = obj.battery;
+
+                };
+			}
+		
+			function blinkLed() {
+				var toSend = "LED";
+				connection.send(toSend);
+			}
+			
+			function showVoltage() {
+				var toSend = "BATT";
+				connection.send(toSend);
+			}
+		</script>
+	</head>
+	<body>
+	<p id="content">
+		<script type="text/javascript">
+			testWebSocket();
+		</script>
+		<h1><center>WebSocketServer</center></h1>
+		<hr color="grey" width="90%" size="1px">
+		
+			<table border="0">
+				<tr>
+					<td><font face="Arial" size="4"><b>Blink LED</b></font></td>
+					<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+					<td><button class="button" onclick="blinkLed()">Toggle LED</button></td>
+				</tr>
+				<tr>
+					<td><font face="Arial" size="4"><b>Get Battery Voltage</b></font></td>
+					<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+					<td><button class="button" onclick="showVoltage()">Show Voltage</font><td>
+				</tr>
+			</table>
+		<hr color="grey" width="90%" size="1px">
+			<table border="0">
+				<tr>
+					<td><font face="Arial" size="4"><b>LED:</b></font></td>
+					<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+					<td><span id="Led">OFF</span></td>
+				</tr>
+				<tr>
+					<td><font face="Arial" size="4"><b>Battery Voltage:</b></font></td>
+					<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+					<td><span id="Battery">0 </span>mV<td>
+				</tr>
+				<tr>
+					<td><font face="Arial" size="4"><b>IP Address:</b></font></td>
+					<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+					<td><p id="ipadd"></p></td>
+				</tr>
+			</table>
+		</center>
+	</p>
+	</body>
+</html>

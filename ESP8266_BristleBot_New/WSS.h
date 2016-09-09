@@ -3,11 +3,7 @@
 
 #include <WebSocketsServer.h>
 
-#define PROXIMITY_INTERVAL 1000
 WebSocketsServer webSocket = WebSocketsServer(81);
-
-
-
 
  // state machine states
 unsigned int state;
@@ -106,6 +102,30 @@ unsigned int state;
               String val=(text.substring(text.indexOf("l")+1,text.length())); 
               leftmotor = val.toInt();
               Sprintln("Left Threshold: " + val);
+            }
+
+            if(text.startsWith("a")){
+              String val=(text.substring(text.indexOf("a")+1,text.length())); 
+              leftProxSlope = val.toInt();
+              Sprintln("Left Proximity Slope: " + val);
+            }    
+
+            if(text.startsWith("b")){
+              String val=(text.substring(text.indexOf("b")+1,text.length())); 
+              leftProxOffset = val.toInt();
+              Sprintln("Left Proximity Offset: " + val);
+            }
+
+            if(text.startsWith("c")){
+              String val=(text.substring(text.indexOf("c")+1,text.length())); 
+              rightProxSlope = val.toInt();
+              Sprintln("Right Proximity Slope: " + val);
+            }    
+
+            if(text.startsWith("d")){
+              String val=(text.substring(text.indexOf("d")+1,text.length())); 
+              rightProxOffset = val.toInt();
+              Sprintln("Right Proximity Offset: " + val);
             }  
         }
         break;
