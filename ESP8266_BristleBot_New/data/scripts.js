@@ -15,8 +15,8 @@ function setupWebSocket() {
         var obj = JSON.parse(evt.data);
         if (obj.led) document.getElementById("outputTextStatus").innerHTML = obj.led;
         if (obj.battery) document.getElementById("outputTextStatus").innerHTML = obj.battery;
-        if(obj.left)    document.getElementById("Left").innerHTML = obj.left;
-        if(obj.right)   document.getElementById("Right").innerHTML = obj.right;
+        if(obj.left)    document.getElementById("LeftProx").innerHTML = obj.left;
+        if(obj.right)   document.getElementById("RightProx").innerHTML = obj.right;
     };
     connection.onerror = function(evt) {
         console.log("ERROR: " + evt.data);
