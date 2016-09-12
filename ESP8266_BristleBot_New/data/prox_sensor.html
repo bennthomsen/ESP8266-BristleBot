@@ -4,24 +4,61 @@
         <link rel="stylesheet" type="text/css" href="indexstyle.css">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <script src="scripts.js"></script>
+        
+        <script>
+        window.onbeforeunload = proxDisableFn();
+        </script>
 
-		<title>Proximity Sensor - Bristle Bot</title>
+		<title>BristleBot Sensors</title>
 	        
 	</head>
 	<body>
 	<p id="content">
-		<div class="title">BristleBot Proximity Sensor</div><br>
-		<hr color="grey" width="90%" size="1px">
-		<center>
-			<table border="0">
-				<tr>
-                    <td>Left Proximity:<span id="Left">0.0</span></td>
+		<div class="title">BristleBot Sensors</div><br>
+        Connection status: <span id="outputTextStatus">UNCONNECTED</span><br>
+        <hr color="grey" width="90%" size="1px">
+        <center>
+            <table border="0">
+                <tr>
+                    <td colspan="3" style="text-align:left"><b>Battery Voltage </b></td>
                 </tr>
                 <tr>
-                    <td>Right Proximity:<span id="Left">0.0</span></td>
+                    <td style="text-align:left">Voltage</td>
+                    <td><span id="outputTextBattery">0.0</span></td>
+                    <td>mV</td>
+                    <td style="text-align:right"><button class="pushbutton" onclick="battFn()"><span>Read Battery Voltage</span></td>
+                    
                 </tr>
-			</table>
+            </table>
+            <hr color="grey" width="90%" size="1px">
+            <table border="0">
+                <tr>
+                    <td colspan="3" style="text-align:left"><b>Proximity Sensor Readings </b></td>
+                </tr>
+                <tr>
+                    <td><button class="pushbutton" onclick="proxSingle()"><span>Single Read</span></td>
+                    <td><button class="pushbutton" onclick="proxEnableFn()"><span>Continuous</span></td>
+                    <td><button class="pushbutton" onclick="proxDisableFn()"><span>Stop Sensor</span></td>
+                </tr>
+                <tr>
+                    <th></th>
+                    <th>Reading</th>
+                    <th>Limit</th>
+                </tr>
+                <tr>
+                    <th style="text-align:left">Left</th>
+                    <td><span id="leftProx">0.0</span></td>
+                    <td><span class="indicator_on"></span></td>
+                </tr>
+                <tr>
+                    <th style="text-align:left">Right</th>
+                    <td><span id="rightProx">0.0</span></td>
+                    <td><span class="indicator_on" id="rightLimit"></span></td>
+                </tr>
+            </table>
+            <hr color="grey" width="90%" size="1px">
+            <img src="logo.png" alt="UCL logo" style="width:197px; height:52px;">
 		</center>
+    </p>
 	</body>
-	</p>
 </html>

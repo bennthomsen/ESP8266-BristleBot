@@ -3,6 +3,8 @@
 #define Sprintln(a) (Serial.println(a))
 #define Sprint(a) (Serial.print(a))
 
+//---- Pin definitions ------
+
 #define RIGHT 15    // Corresponds to GPI0_5 labelled pin D1 on NodeMCU board
 #define LEFT 5    // Corresponds to GPIO_15 labelled pin D8 on NodeMCU board
 #define REDLED 16     // Corresponds to GPIO16 labelled pin D0 on NodeMCU board this pin is also connected to the LED cathode on the NodeMCU board
@@ -14,27 +16,18 @@
 #define IRRXR 12    // Corresponds to GPIO12 labelled pin D6 on NodeMCU board
 #define IRRXL 14    // Corresponds to GPIO14 labelled pin D5 on NodeMCU board
 
-#define PROXIMITY_INTERVAL 1000
 
-#define HTMLINDEX "/"
-#define HTMLDRIVE "/drive.html"
+long proximityInterval = 1000;
 
-unsigned long previousMillis = 0;
-unsigned long startMicros = 0;
-unsigned long LeftStart = 0;
-unsigned long RightStart = 0;
-const long interval = 1000;
-volatile int pulselengthL = 0;
-volatile int pulselengthR = 0;
-int oldL = 0;
-int oldR = 0;
+//int oldL = 0;
+//int oldR = 0;
 int front = 1;
-int frontdet = 0;
-int Ldetect = 0;
-int Rdetect = 0;
-String distance;
+//int frontdet = 0;
+//int Ldetect = 0;
+//int Rdetect = 0;
+//String distance;
 boolean prox_sensor_run = false;
-uint8_t socketNumber;
+boolean newSampleAvailable = false;
 
 char *ssid = "BristleBot_00";
 const char *password = "uclbristlebot";
@@ -45,17 +38,21 @@ int rightmotor = 255;
 unsigned long motorleft = 0;
 unsigned long motorright = 0;
 
-int leftProxSlope = 0;
-int rightProxSlope = 0;
-int leftProxOffset = 0;
-int rightProxOffset = 0;
+float leftProxSlope = 0;
+float rightProxSlope = 0;
+float leftProxOffset = 0;
+float rightProxOffset = 0;
 
 volatile int rightThreshold = 150;
 volatile int leftThreshold = 150;
 
+unsigned long previousMillis = 0;
+unsigned long currentMillis = 0;
+
+#include "ProximityFunctions.h"
 #include "WebServer.h"
 #include "WSS.h"
-#include "ProximityFunctions.h"
+
 
 
 void initialisePins(void) {
@@ -120,26 +117,15 @@ void setup() {
 void loop() {
     server.handleClient();        // Check for WebServer requests
     webSocket.loop();             // Check for WebSocket requests
-/*
-    unsigned long currentMillis = millis();
-    if(currentMillis - previousMillis >= PROXIMITY_INTERVAL) {
-      previousMillis = currentMillis;
-      if (front) {
-        digitalWrite(BLUELED, LOW);
-        IRmod(IRTX, 10000); 
-        digitalWrite(BLUELED, HIGH);
-      }
-      else {
-        digitalWrite(REDLEDBACK, LOW);
-        IRmod(IRTXBACK, 10000);
-        digitalWrite(REDLEDBACK, HIGH);
-      }   
-     }
 
-     if (frontdet ) {     
-        distance = "Front Dist. L: " + String(pulselengthL) + " R:" + String(pulselengthR);       
-     }
-   */  
+    if (prox_sensor_run) {
+      currentMillis = millis();
+      if(currentMillis - previousMillis >= proximityInterval) {
+        previousMillis = currentMillis;
+        acquireProximity();
+      }
+    }
+    sendProximity();           // Send updated Proximity reading if available
 }
 
 

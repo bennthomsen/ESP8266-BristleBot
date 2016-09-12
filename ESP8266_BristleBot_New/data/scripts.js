@@ -1,5 +1,6 @@
 function setupWebSocket() {
     var host = window.location.hostname;
+    var host = "192.168.4.1"
     console.log("Host: " + host);
     connection = new WebSocket("ws://" + host + ":81/");
     connection.onopen = function(evt) {
@@ -14,9 +15,14 @@ function setupWebSocket() {
         console.log('Server: ', evt.data);
         var obj = JSON.parse(evt.data);
         if (obj.led) document.getElementById("outputTextStatus").innerHTML = obj.led;
-        if (obj.battery) document.getElementById("outputTextStatus").innerHTML = obj.battery;
-        if(obj.left)    document.getElementById("LeftProx").innerHTML = obj.left;
-        if(obj.right)   document.getElementById("RightProx").innerHTML = obj.right;
+        if (obj.battery) document.getElementById("outputTextBattery").innerHTML = obj.battery;
+        if(obj.left)    document.getElementById("leftProx").innerHTML = obj.left;
+        if(obj.right)   document.getElementById("rightProx").innerHTML = obj.right;
+        if(obj.leftThr)    document.getElementById("leftProxThr").innerHTML = obj.leftThr;
+        if(obj.righThr)   document.getElementById("rightProxThr").innerHTML = obj.rightThr;
+        if(obj.leftCal)    document.getElementById("leftMotorCal").innerHTML = obj.leftThr;
+        if(obj.righCal)   document.getElementById("rightMotorCal").innerHTML = obj.rightThr;
+        
     };
     connection.onerror = function(evt) {
         console.log("ERROR: " + evt.data);
@@ -33,6 +39,12 @@ function battFn() {
     WSSend(toSend);
 }
 
+function proxSingle() {
+    var toSend = "PROX_SINGLE";
+    resetIndicator();
+    WSSend(toSend);
+}
+
 function proxEnableFn() {
     var toSend = "PROX_EN";
     WSSend(toSend);
@@ -40,12 +52,19 @@ function proxEnableFn() {
 
 function proxDisableFn() {
     var toSend = "PROX_DIS";
+    setIndicator();
     WSSend(toSend);
 }
 
-function stop() {
+function stopMotors() {
     console.log("Stopping");
     WSSend("p" + 0);
+}
+
+function startMotors() {
+    console.log("Starting Motors");
+    WSSend("s" + document.getElementById("inputSliderSteer").value);
+    WSSend("p" + document.getElementById("inputSliderPower").value);
 }
 
 function center(newValue)
@@ -66,6 +85,18 @@ function updateSteer(newValue)
     WSSend("s"+newValue);
 }
 
+function setLeftMotor(newValue)
+{
+    console.log("Setting Left Motor Power to: " +newValue);
+    WSSend("e"+newValue);
+}
+
+function setRightMotor(newValue)
+{
+    console.log("Setting Right Motor Power to: " +newValue);
+    WSSend("f"+newValue);
+}
+
 function WSSend(data){
     try {
         console.log("Sending: " + data);
@@ -77,6 +108,15 @@ function WSSend(data){
         setupWebSocket();
     }
 }
+
+function setIndicator() {
+    document.getElementById("rightLimit").className = "indicator_on";
+}
+
+function resetIndicator() {
+    document.getElementById("rightLimit").className = "indicator_off";
+}
+
 
 
 function closeSocket()

@@ -7,6 +7,7 @@ WebSocketsServer webSocket = WebSocketsServer(81);
 
  // state machine states
 unsigned int state;
+uint8_t socketNumber;
 #define SEQUENCE_IDLE 0x00
 #define GET_SAMPLE 0x10
 #define GET_SAMPLE__WAITING 0x12 
@@ -19,10 +20,10 @@ unsigned int state;
         case WStype_DISCONNECTED:
           break;
         case WStype_CONNECTED: {
-          IPAddress ip = webSocket.remoteIP(num);  
-          socketNumber = num;
-          state = GET_SAMPLE;
-          }
+          IPAddress ip = webSocket.remoteIP(num);
+          socketNumber = num; 
+
+         }
           break;
         case WStype_TEXT:{
             String text = String((char *) &payload[0]);
@@ -45,7 +46,21 @@ unsigned int state;
             reply += voltage;
             reply += "}";
             webSocket.sendTXT(num, reply);
+           }
 
+           if(text=="PROX_SINGLE") {
+            acquireProximity();
+            Sprintln("Proximity Sensor Single");
+           }
+
+           if(text=="PROX_EN") {
+            prox_sensor_run = true;
+            Sprintln("Run Proximity Sensor");
+           }
+
+           if(text=="PROX_DIS") {
+            prox_sensor_run = false;
+            Sprintln("Stop Proximity Sensor");
            }
            
           if(text.startsWith("s")) {
@@ -64,10 +79,10 @@ unsigned int state;
                 analogWrite(RIGHT,motorright);
               }
               
-            Serial.print ( "Set Steering Motor Power (L,R):");
-            Serial.print (motorleft);
-            Serial.print (", ");
-            Serial.println (motorright);
+            Sprint( "Set Motor Steering & Power (L,R):");
+            Sprint(motorleft);
+            Sprint(", ");
+            Sprintln(motorright);
           }
 
 
@@ -79,10 +94,28 @@ unsigned int state;
             analogWrite(RIGHT,motorright);
             analogWrite(LEFT,motorleft);
             
-            Serial.print ( "Set Motor Power (L,R):");
-            Serial.print (motorleft);
-            Serial.print (", ");
-            Serial.println (motorright);
+            Sprint( "Set Motor Power (L,R):");
+            Sprint(motorleft);
+            Sprint(", ");
+            Sprintln(motorright);
+           }
+
+           if(text.startsWith("e")){
+            String yVal=(text.substring(text.indexOf("e")+1,text.length())); 
+            motorleft = yVal.toInt();     
+            analogWrite(LEFT,motorleft);
+            
+            Sprint( "Set Motor Power (L):");
+            Sprintln(motorleft);
+           }
+
+            if(text.startsWith("f")){
+            String yVal=(text.substring(text.indexOf("f")+1,text.length())); 
+            motorright = yVal.toInt();     
+            analogWrite(RIGHT,motorright);
+            
+            Sprint( "Set Motor Power (R):");
+            Sprintln(motorright);
            }
 
            if(text=="RESET"){
@@ -137,23 +170,20 @@ unsigned int state;
             break;
     }
 }
-  
-void proximityRead(void){
-if (state == SEQUENCE_IDLE){
-  return;
-  }
-else if (state == GET_SAMPLE){
-  state = GET_SAMPLE__WAITING;
-  return;
-  }
-else if (state == GET_SAMPLE__WAITING){
-   String prox_L = String (pulselengthL);
-   String prox_R = String (pulselengthR);
 
-  webSocket.sendTXT(socketNumber , "{\"left\":" + prox_L + "}");
-  webSocket.sendTXT(socketNumber , "{\"right\":" + prox_R + "}");
-  return;
-  }
+void sendProximity() {
+          if (LeftAvailable) {
+            LeftAvailable = false;
+            float LeftProx = ProximityCal(pulselengthL, leftProxSlope, leftProxOffset);
+            Sprintln(LeftProx);
+            webSocket.sendTXT(socketNumber, "{\"left\":" + String(pulselengthL) + ",\"leftCal\":" + String(LeftProx) + "}");
+          }
+          if (RightAvailable) {
+            RightAvailable = false;
+            float RightProx = ProximityCal(pulselengthL, rightProxSlope, rightProxOffset);
+            Sprintln(RightProx);
+            webSocket.sendTXT(socketNumber, "{\"right\":" + String(pulselengthR) + ",\"rightCal\":" + String(RightProx) + "}");
+          }
 }
 
 #endif
