@@ -135,12 +135,14 @@ function updateSteer(newValue)
 function setLeftMotor(newValue)
 {
     console.log("Setting Left Motor Power to: " +newValue);
+    document.getElementById("outputTextLeft").innerHTML = newValue;
     WSSend("e"+newValue);
 }
 
 function setRightMotor(newValue)
 {
     console.log("Setting Right Motor Power to: " +newValue);
+    document.getElementById("outputTextRight").innerHTML = newValue;
     WSSend("f"+newValue);
 }
 

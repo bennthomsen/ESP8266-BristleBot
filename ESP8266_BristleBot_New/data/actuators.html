@@ -35,16 +35,21 @@
                 <hr color="grey" width="90%" size="1px">
                 <table border="0">
                     <tr>
-                        <td style="text-align:left"><b>Motors</b></td>
+                        <td style="text-align:left" colspan="2"><b>Motors</b></td>
+                        <td style="text-align:right" colspan="2"><button class="pushbutton" onclick="stopMotors()"><span>Stop Motors</span></td>
                     </tr>
+                </table>
+                <table border="0">
                     <tr>
-                        <td><b>Left: </b><span id="outputTextSteer">0</span></td>
-                        <td></td>
-                        <td><b>Right: </b><span id="outputTextPower">0</span></td>
+                        <td style="width:25%"><b>Left:</b></td>
+                        <td style="width:25%"><span id="outputTextLeft">0</span></td>
+                        <td style="width:25%"><b>Right:</b></td>
+                        <td style="width:25%"><span id="outputTextRight">0</span></td>
                     </tr>
+                </table>
+                <table border="0">
                     <tr>
                         <td><input type="range" id= "inputSliderSteer" min="0" max="255" value="0" step="1" oninput="setLeftMotor(this.value)" class="vertical" orient="vertical"/></td>
-                        <td><button class="pushbutton" onclick="stopMotors()"><span>Stop Motors</span></td>
                         <td><input type="range" id= "inputSliderPower" min="0" max="255" value="0" step="1" oninput="setRightMotor(this.value)" class="vertical" orient="vertical"/></td>
                     </tr>
                 </table>
