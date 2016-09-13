@@ -46,14 +46,8 @@
             connection.send("s"+newValue);
         }
         
-        document.getElementById("button").addEventListener("click", function() {
-                                                           document.documentElement.requestFullScreen();
-                                                           screen.orientation.lock("portrait-primary");
-                                                           
-                                                           }, false);
         
         
-        window.addEventListener('deviceorientation', handleOrientation);
         
         window.onload = setupWebSocket;
         
@@ -158,6 +152,8 @@
                 ball.style.left = (maxY*x/180 - 10) + "px";
                 
             }
+        
+        window.addEventListener('deviceorientation', handleOrientation);
 
         </script>
 
