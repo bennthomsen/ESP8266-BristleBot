@@ -47,9 +47,9 @@ void IRmod(char pin, int cycles) {
   attachInterrupt(digitalPinToInterrupt(IRRXR), rightProximityStart, FALLING);
    for (int i=0; i <= cycles; i++){
         digitalWrite(pin, LOW);
-        delayMicroseconds(12);
+        delayMicroseconds(6);
         digitalWrite(pin, HIGH);
-        delayMicroseconds(12);
+        delayMicroseconds(18);
       }
 }
 

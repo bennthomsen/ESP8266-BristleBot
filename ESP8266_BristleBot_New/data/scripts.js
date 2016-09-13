@@ -16,8 +16,16 @@ function setupWebSocket() {
         var obj = JSON.parse(evt.data);
         if (obj.led) document.getElementById("outputTextStatus").innerHTML = obj.led;
         if (obj.battery) document.getElementById("outputTextBattery").innerHTML = obj.battery;
-        if(obj.left)    document.getElementById("leftProx").innerHTML = obj.left;
-        if(obj.right)   document.getElementById("rightProx").innerHTML = obj.right;
+        if(obj.left) {
+            document.getElementById("leftProx").innerHTML = obj.left;
+            if (obj.left > 200) document.getElementById("leftLimit").className = "indicator_off";
+            else document.getElementById("leftLimit").className = "indicator_on";
+        }
+        if(obj.right) {
+            document.getElementById("rightProx").innerHTML = obj.right;
+            if (obj.right > 200) document.getElementById("rightLimit").className = "indicator_off";
+            else document.getElementById("rightLimit").className = "indicator_on";
+        }
         if(obj.leftThr)    document.getElementById("leftProxThr").innerHTML = obj.leftThr;
         if(obj.righThr)   document.getElementById("rightProxThr").innerHTML = obj.rightThr;
         if(obj.leftCal)    document.getElementById("leftMotorCal").innerHTML = obj.leftThr;
@@ -29,8 +37,48 @@ function setupWebSocket() {
     };
 }
 
-function ledFn() {
-    var toSend = "LED";
+function RedLEDBlink() {
+    var toSend = "RED_LED_BLINK";
+    WSSend(toSend);
+}
+
+function RedLEDOn() {
+    var toSend = "RED_LED_ON";
+    WSSend(toSend);
+}
+
+function RedLEDOff() {
+    var toSend = "RED_LED_OFF";
+    WSSend(toSend);
+}
+
+function BlueLEDBlink() {
+    var toSend = "BLUE_LED_BLINK";
+    WSSend(toSend);
+}
+
+function BlueLEDOn() {
+    var toSend = "BLUE_LED_ON";
+    WSSend(toSend);
+}
+
+function BlueLEDOff() {
+    var toSend = "BLUE_LED_OFF";
+    WSSend(toSend);
+}
+
+function FrontIRLEDBlink() {
+    var toSend = "FRONT_LED_BLINK";
+    WSSend(toSend);
+}
+
+function FrontIRLEDOn() {
+    var toSend = "FRONT_LED_ON";
+    WSSend(toSend);
+}
+
+function FrontIRLEDOff() {
+    var toSend = "FRONT_LED_OFF";
     WSSend(toSend);
 }
 
@@ -41,7 +89,6 @@ function battFn() {
 
 function proxSingle() {
     var toSend = "PROX_SINGLE";
-    resetIndicator();
     WSSend(toSend);
 }
 
@@ -114,7 +161,7 @@ function setIndicator() {
 }
 
 function resetIndicator() {
-    document.getElementById("rightLimit").className = "indicator_off";
+    document.getElementById("leftLimit").className = "indicator_off";
 }
 
 
@@ -122,6 +169,7 @@ function resetIndicator() {
 function closeSocket()
 {
     console.log("Closing Socket");
+    proxDisableFn();
     connection.close();
     return null;
 }

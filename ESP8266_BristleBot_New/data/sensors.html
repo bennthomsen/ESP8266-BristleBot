@@ -4,11 +4,6 @@
         <link rel="stylesheet" type="text/css" href="indexstyle.css">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <script src="scripts.js"></script>
-        
-        <script>
-        window.onbeforeunload = proxDisableFn();
-        </script>
-
 		<title>BristleBot Sensors</title>
 	        
 	</head>
@@ -48,7 +43,7 @@
                 <tr>
                     <th style="text-align:left">Left</th>
                     <td><span id="leftProx">0.0</span></td>
-                    <td><span class="indicator_on"></span></td>
+                    <td><span class="indicator_on" id="leftLimit"></span></td>
                 </tr>
                 <tr>
                     <th style="text-align:left">Right</th>

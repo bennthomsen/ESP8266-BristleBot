@@ -28,13 +28,55 @@ uint8_t socketNumber;
         case WStype_TEXT:{
             String text = String((char *) &payload[0]);
             
-          if(text=="LED") {
+          if(text=="RED_LED_BLINK") {
+             heartbeat_enable = true;
+            Sprintln("Red LED blink");
+           }
+
+          if(text=="RED_LED_ON") {
+            heartbeat_enable = false;
             digitalWrite(REDLED,LOW);
-            delay(500);
+            Sprintln("Red LED on");
+           }
+
+          if(text=="RED_LED_OFF") {
+            heartbeat_enable = false;
             digitalWrite(REDLED,HIGH);
-            Sprintln("led just lit");
-            String reply = "{\"led\":\"ON\"}";
-            webSocket.sendTXT(num, reply);
+            Sprintln("Red LED off");
+           }
+
+          if(text=="BLUE_LED_BLINK") {
+            digitalWrite(BLUELED,LOW);
+            delay(500);
+            digitalWrite(BLUELED,HIGH);
+            Sprintln("BLUE LED blink");
+           }
+
+          if(text=="BLUE_LED_ON") {
+            digitalWrite(BLUELED,LOW);
+            Sprintln("BLUE LED on");
+           }
+
+          if(text=="BLUE_LED_OFF") {
+            digitalWrite(BLUELED,HIGH);
+            Sprintln("BLUE LED off");
+           }
+
+          if(text=="FRONT_LED_BLINK") {
+            digitalWrite(IRTX,LOW);
+            delay(500);
+            digitalWrite(IRTX,HIGH);
+            Sprintln("FRONT LED blink");
+           }
+
+          if(text=="FRONT_LED_ON") {
+            digitalWrite(IRTX,LOW);
+            Sprintln("FRONT LED on");
+           }
+
+          if(text=="FRONT_LED_OFF") {
+            digitalWrite(IRTX,HIGH);
+            Sprintln("FRONT LED off");
            }
 
           if(text=="BATT") {

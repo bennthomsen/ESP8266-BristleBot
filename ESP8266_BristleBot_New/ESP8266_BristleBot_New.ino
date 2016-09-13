@@ -13,8 +13,8 @@
 #define BLUELED 2    // Corresponds to GPIO2 labelled pin D4 on NodeMCU board
 #define REDLEDBACK 10    // Corresponds to GPIO10 labelled pin SD3 on NodeMCU board
 
-#define IRRXR 12    // Corresponds to GPIO12 labelled pin D6 on NodeMCU board
-#define IRRXL 14    // Corresponds to GPIO14 labelled pin D5 on NodeMCU board
+#define IRRXL 12    // Corresponds to GPIO12 labelled pin D6 on NodeMCU board
+#define IRRXR 14    // Corresponds to GPIO14 labelled pin D5 on NodeMCU board
 
 
 long proximityInterval = 1000;
@@ -49,6 +49,11 @@ volatile int leftThreshold = 150;
 unsigned long previousMillis = 0;
 unsigned long currentMillis = 0;
 
+boolean heartbeat_enable = true;
+unsigned long previous = 0;
+int blinkTime = 100;
+boolean ledstate = false;
+
 #include "ProximityFunctions.h"
 #include "WebServer.h"
 #include "WSS.h"
@@ -75,6 +80,29 @@ void initialisePins(void) {
     pinMode(IRRXL, INPUT_PULLUP);
     analogWriteFreq(400);             // Set frequency for PWM
 }
+
+void heartbeat(int pin, unsigned long current){
+
+  if (!heartbeat_enable) return;
+  else {
+    if(current - previous >= blinkTime) {
+      previous = current;
+      if (ledstate) {
+        // Turn LED Off
+        digitalWrite(pin, HIGH);
+        ledstate = false;
+        blinkTime = 900;
+      }
+      else {
+        // Turn LED On
+        digitalWrite(pin, LOW);
+        ledstate = true;
+        blinkTime = 100;
+      }
+    } 
+  }
+}
+
 
 
 void setup() {
@@ -118,8 +146,11 @@ void loop() {
     server.handleClient();        // Check for WebServer requests
     webSocket.loop();             // Check for WebSocket requests
 
+
+    currentMillis = millis();
+    heartbeat(REDLED,currentMillis);
     if (prox_sensor_run) {
-      currentMillis = millis();
+      
       if(currentMillis - previousMillis >= proximityInterval) {
         previousMillis = currentMillis;
         acquireProximity();
