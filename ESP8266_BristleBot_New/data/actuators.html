@@ -14,9 +14,6 @@
             <center>
                 <table border="0">
                     <tr>
-                        <td style="text-align:left"><b>LEDs</b></td>
-                    </tr>
-                    <tr>
                         <td style="text-align:left">Red LED</td>
                         <td><button class="pushbutton" onclick="RedLEDOn()"><span>On</span></td>
                         <td><button class="pushbutton" onclick="RedLEDOff()"><span>Off</span></td>
@@ -41,19 +38,14 @@
                         <td style="text-align:left"><b>Motors</b></td>
                     </tr>
                     <tr>
-                        <td><span id="outputTextSteer">0</span></td>
+                        <td><b>Left: </b><span id="outputTextSteer">0</span></td>
                         <td></td>
-                        <td><span id="outputTextPower">0</span></td>
+                        <td><b>Right: </b><span id="outputTextPower">0</span></td>
                     </tr>
                     <tr>
                         <td><input type="range" id= "inputSliderSteer" min="0" max="255" value="0" step="1" oninput="setLeftMotor(this.value)" class="vertical" orient="vertical"/></td>
-                        <td></td>
-                        <td><input type="range" id= "inputSliderPower" min="0" max="255" value="0" step="1" oninput="setRightMotor(this.value)" class="vertical" orient="vertical"/></td>
-                    </tr>
-                    <tr>
-                        <td><b>Left</b></td>
                         <td><button class="pushbutton" onclick="stopMotors()"><span>Stop Motors</span></td>
-                        <td><b>Right</b></td>
+                        <td><input type="range" id= "inputSliderPower" min="0" max="255" value="0" step="1" oninput="setRightMotor(this.value)" class="vertical" orient="vertical"/></td>
                     </tr>
                 </table>
             <hr color="grey" width="90%" size="1px">

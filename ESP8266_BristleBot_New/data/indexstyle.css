@@ -116,7 +116,7 @@ a.button:hover span:after {
 input.vertical {
     -webkit-appearance: slider-vertical;
     writing-mode: bt-lr;
-    height: 250px;
+    height: 200px;
 }
 input.slider-width300
 {
