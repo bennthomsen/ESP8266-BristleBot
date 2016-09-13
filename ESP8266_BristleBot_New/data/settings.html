@@ -3,7 +3,7 @@
     <head>
         <link rel="stylesheet" type="text/css" href="indexstyle.css">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Main - BristleBot</title>
+        <title>BristleBot - Settings</title>
         <script src="scripts.js"></script>
         <script>
             function updateMotorCal() {
@@ -43,7 +43,7 @@
         <center>
             <table>
                 <tr>
-                    <td colspan="3" style="text-align:left"><b>Motor Max Power Calibration </b></td>
+                    <td colspan="3" class="left_align"><b>Motor Max Power Calibration </b></td>
                 </tr>
                 <tr>
                     <td>Left <input type="number" id= "leftMotorCal" max="255" min="0" step="1" value="0"/></td>
@@ -55,7 +55,8 @@
             <hr color="grey" width="90%" size="1px">
             <table>
                 <tr>
-                    <td colspan="3" style="text-align:left"><b>Proximity Sensor Calibration</b></td>
+                    <td colspan="2" class="left_align"><b>Proximity Sensor Calibration</b></td>
+                    <td style="text-align:right"><button class="pushbutton" onclick="updateProximityCal()"><span>Update</span></td>
                 </tr>
                 <tr>
                     <th>Sensor</th>
@@ -73,14 +74,15 @@
                     <td><input type="number" id= "rightProximtyOffset" max="255" min="0" step="1" value="0"/></td>
                 </tr>
                 <tr>
-                    <td colspan="3" style="text-align:right"><button class="pushbutton" onclick="updateProximityCal()"><span>Update</span></td>
+                    
                 </tr>
             </table>
             
             <hr color="grey" width="90%" size="1px">
             <table>
                 <tr>
-                    <td colspan="3" style="text-align:left"><b>Proximity Sensor Thresholds</b></td>
+                    <td colspan="2" class="left_align"><b>Proximity Sensor Thresholds</b></td>
+                    <td style="text-align:right"><button class="pushbutton" onclick="updateProximityThr()"><span>Update</span></td>
                 </tr>
                 <tr>
                     <th>Sensor</th>
@@ -95,7 +97,7 @@
                     <td><input type="number" id= "rightProxThr" max="300" min="0" step="1" value="0"/></td>
                 </tr>
                 <tr>
-                    <td colspan="3" style="text-align:right"><button class="pushbutton" onclick="updateProximityThr()"><span>Update</span></td>
+                    
                 </tr>
             </table>
 

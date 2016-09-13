@@ -3,7 +3,7 @@
     <head>
         <link rel="stylesheet" type="text/css" href="indexstyle.css">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Main - BristleBot</title>
+        <title>BristleBot - Steer</title>
         <script src="scripts.js"></script>
         <script>
  
@@ -40,10 +40,10 @@
         <center>
             <table>
                 <tr>
-                    <td colspan="3" style="text-align:left"><b>Motor Max Power Calibration </b></td>
+                    <td colspan="3" class="left_align"><b>Motor Max Power Calibration </b></td>
                 </tr>
                 <tr>
-                    <td>Left <input type="number" id= "leftMotorCal" max="255" min="0" step="1" value="0"/></td>
+                    <td class="left_align">Left <input type="number" id= "leftMotorCal" max="255" min="0" step="1" value="0"/></td>
                     <td>Right <input type="number" id= "rightMotorCal" max="255" min="0" step="1" value="0"/></td>
                     <td><button class="pushbutton" onclick="updateCal()"><span>Update</span></td>
                     
@@ -52,7 +52,7 @@
             <hr color="grey" width="90%" size="1px">
                 <table  border="0px">
                     <tr>
-                        <td style="text-align:left"><b>Straight Motion</b></td>
+                        <td class="left_align"><b>Straight Motion</b></td>
                         <td style="text-align:right">Duration <input type="number" id= "straightDuration" max="30000" min="0" step="100" value="0"/> ms</td>
                     </tr>
                 </table>
@@ -74,7 +74,7 @@
                 <hr color="grey" width="90%" size="1px">
                 <table  border="0px">
                     <tr>
-                        <td style="text-align:left"><b>Steering Parameters</b></td>
+                        <td class="left_align"><b>Steering Parameters</b></td>
                         <td style="text-align:right">Duration <input type="number" id= "steerDuration" max="30000" min="0" step="100" value="0"/> ms</td>
                     </tr>
                     </table>
