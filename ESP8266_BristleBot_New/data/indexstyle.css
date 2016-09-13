@@ -35,10 +35,15 @@ input {
 }
 
 .title {
-    font-size: 35px;
+    font-size: 30px;
     color: #333333;
     font-family: Century Gothic, sans-serif;
     text-align: center;
+    padding-top: 15px;
+}
+
+.status {
+    padding-left: 20px;
 }
 
 a.button {
@@ -116,7 +121,7 @@ a.button:hover span:after {
 input.vertical {
     -webkit-appearance: slider-vertical;
     writing-mode: bt-lr;
-    height: 200px;
+    height: 175px;
 }
 input.slider-width300
 {

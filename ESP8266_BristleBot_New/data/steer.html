@@ -4,63 +4,9 @@
         <link rel="stylesheet" type="text/css" href="indexstyle.css">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Main - BristleBot</title>
+        <script src="scripts.js"></script>
         <script>
-            function setupWebSocket() {
-                var host = window.location.hostname;
-                //var host = "192.168.4.1";
-                console.log("Host: " + host);
-                connection = new WebSocket("ws://" + host + ":81/");
-                connection.onopen = function(evt) {
-                    console.log("CONNECTED");
-                    document.getElementById("outputTextStatus").innerHTML = "CONNECTED";
-                };
-                connection.onclose = function(evt) {
-                    console.log("DISCONNECTED");
-                    document.getElementById("outputTextStatus").innerHTML = "DISCONNECTED";
-                };
-                connection.onmessage = function(evt) {
-                    console.log('Server: ', evt.data);
-                    var obj = JSON.parse(evt.data);
-                    if (obj.led) document.getElementById("outputTextStatus").innerHTML = obj.led;
-                    if (obj.battery) document.getElementById("outputTextStatus").innerHTML = obj.battery;
-                    //if(obj.left)    document.getElementById("Left").innerHTML = obj.left;
-                    //if(obj.right)    document.getElementById("Right").innerHTML = obj.right;
-                };
-                connection.onerror = function(evt) {
-                    console.log("ERROR: " + evt.data);
-                };
-            }
-        
-        function ledFn() {
-            var toSend = "LED";
-            connection.send(toSend);
-        }
-        
-        function battFn() {
-            var toSend = "BATT";
-            connection.send(toSend);
-        }
-        
-        function resetFn() {
-            var toSend = "RESET";
-            connection.send(toSend);
-            document.getElementById("inputSliderPower").value = "0";
-            document.getElementById("outputTextPower").innerHTML="0";
-        }
-        
-        function setSteer(newValue)
-        {
-            document.getElementById("outputTextSteer").innerHTML=newValue;
-            
-            connection.send("s"+newValue);
-        }
-        
-        function setPower(newValue)
-        {
-            document.getElementById("outputTextPower").innerHTML=newValue;
-            
-            connection.send("p"+newValue);
-        }
+ 
         
         function updateCal(newValue)
         {
@@ -82,34 +28,14 @@
             document.getElementById("inputSliderPower").value = 0;
             document.getElementById("outputTextPower").innerHTML=0;
         }
-        
-        function updatePower(newValue)
-        {
-            document.getElementById("outputTextPower").innerHTML=newValue;
-        }
-        
-        function updateSteer(newValue)
-        {
-            document.getElementById("outputTextSteer").innerHTML=newValue;
-        }
-        
-        
-        function closeSocket()
-        {
-            
-            connection.close();
-        }
-        
-        //window.addEventListener("load", testWebSocket, false);
+
         </script>
     </head>
     <body>
         <p id="content">
-        <script type="text/javascript">
-            setupWebSocket();
-        </script>
-        <div class="title">BristleBot Steer</div><br>
-        Connection status: <span id="outputTextStatus">UNCONNECTED</span><br>
+
+        <div class="title">BristleBot Steer</div>
+        <div class="status">Connection status: <span id="outputTextStatus">UNCONNECTED</span></div>
         <hr color="grey" width="90%" size="1px">
         <center>
             <table>
