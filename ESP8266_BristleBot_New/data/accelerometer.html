@@ -127,20 +127,6 @@
                 var y_r = Math.round(y);
                 var x_r = Math.round(x);
                 
-                document.getElementById("xcoord").innerHTML = x_r;
-                document.getElementById("ycoord").innerHTML = y_r;
-                
-                var power         = Math.abs(y_r - 89) * (255 / 89);
-                var power_rounded = Math.round(power);
-                document.getElementById("power").innerHTML = power_rounded;
-                
-                
-                
-                var steer			= (x_r + 89) * (255 / 178);
-                var steer_rounded	= Math.round(steer);
-                document.getElementById("steer").innerHTML = steer_rounded;
-                
-                
                 // To make computation easier we shift the range of
                 // x and y to [0,180]
                 y += 90;
@@ -150,6 +136,18 @@
                 // It center the positioning point to the center of the ball
                 ball.style.top  = (maxX*y/180 - 10) + "px";
                 ball.style.left = (maxY*x/180 - 10) + "px";
+                
+                document.getElementById("xcoord").innerHTML = x_r;
+                document.getElementById("ycoord").innerHTML = y_r;
+                
+                var power         = Math.abs(y_r - 89) * (255 / 89);
+                var power_rounded = Math.round(power);
+                document.getElementById("power").innerHTML = power_rounded;
+                
+                var steer			= (x_r + 89) * (255 / 178);
+                var steer_rounded	= Math.round(steer);
+                document.getElementById("steer").innerHTML = steer_rounded;
+            
                 
                 //setPower(power_rounded);
                 //setSteer(steer_rounded);
