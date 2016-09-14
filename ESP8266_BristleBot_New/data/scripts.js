@@ -28,8 +28,8 @@ function setupWebSocket() {
         }
         if(obj.leftThr)    document.getElementById("leftProxThr").innerHTML = obj.leftThr;
         if(obj.righThr)   document.getElementById("rightProxThr").innerHTML = obj.rightThr;
-        if(obj.leftCal)    document.getElementById("leftMotorCal").innerHTML = obj.leftThr;
-        if(obj.righCal)   document.getElementById("rightMotorCal").innerHTML = obj.rightThr;
+        if(obj.motor.leftmax) document.getElementById("leftMotorCal").innerHTML = obj.motor.leftmax;
+        if(obj.motor.rightmax) document.getElementById("rightMotorCal").innerHTML = obj.motor.leftmax;
         
     };
     connection.onerror = function(evt) {

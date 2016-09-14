@@ -13,25 +13,16 @@
                 WSSend("l" + left);
                 WSSend("r" + right);
             }
-        
-            function updateProximityCal() {
-                var leftSlope = document.getElementById("leftProximitySlope").value;
-                var leftOffset = document.getElementById("leftProximityOffset").value;
-                var rightSlope = document.getElementById("rightProximtiySlope").value;
-                var rightOffset = document.getElementById("rightProximityOffset").value;
-                console.log("Setting Proxity slope calibration to (L,R): " + leftSlope + ", " + rightSlope);
-                console.log("Setting Proxity offset calibration to (L,R): " + leftOffset + ", " + rightOffset);
-                
-                WSSend("a" + leftSlope);
-                WSSend("b" + leftOffset);
-                WSSend("c" + rightSlope);
-                WSSend("d" + rightOffset);
-            }
             
             function updateAll() {
                 updateMotorCal();
                 updateProximityCal();
             }
+        
+        function GetSettings() {
+            WSSend("SET");
+        }
+            
         
         </script>
     </head>
@@ -53,32 +44,7 @@
                 </tr>
             </table>
             <hr color="grey" width="90%" size="1px">
-            <table>
-                <tr>
-                    <td colspan="2" class="left_align"><b>Proximity Sensor Calibration</b></td>
-                    <td style="text-align:right"><button class="pushbutton" onclick="updateProximityCal()"><span>Update</span></td>
-                </tr>
-                <tr>
-                    <th>Sensor</th>
-                    <th>Slope</th>
-                    <th>Offset</th>
-                </tr>
-                <tr>
-                    <td>Left</td>
-                    <td><input type="number" id= "leftProximtySlope" max="255" min="0" step="1" value="0"/></td>
-                    <td><input type="number" id= "leftProximtyOffset" max="255" min="0" step="1" value="0"/></td>
-                </tr>
-                <tr>
-                    <td>Right</td>
-                    <td><input type="number" id= "rightProximtySlope" max="255" min="0" step="1" value="0"/></td>
-                    <td><input type="number" id= "rightProximtyOffset" max="255" min="0" step="1" value="0"/></td>
-                </tr>
-                <tr>
-                    
-                </tr>
-            </table>
             
-            <hr color="grey" width="90%" size="1px">
             <table>
                 <tr>
                     <td colspan="2" class="left_align"><b>Proximity Sensor Thresholds</b></td>

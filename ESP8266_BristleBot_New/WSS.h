@@ -90,6 +90,15 @@ uint8_t socketNumber;
             webSocket.sendTXT(num, reply);
            }
 
+           if(text=="SET") {
+            String reply = "{\"motor\":{\"leftmax\":";
+            reply += leftmotor;
+            reply += ",\"rightmax\":";
+            reply += rightmotor;
+            reply += "}}";
+            webSocket.sendTXT(num, reply);
+           }
+
            if(text=="PROX_SINGLE") {
             acquireProximity();
             Sprintln("Proximity Sensor Single");
