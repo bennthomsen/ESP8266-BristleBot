@@ -53,7 +53,7 @@
                 <table  border="0px">
                     <tr>
                         <td class="left_align"><b>Straight Motion</b></td>
-                        <td style="text-align:right">Duration <input type="number" id= "straightDuration" max="30000" min="0" step="100" value="0"/> ms</td>
+                        <td class="right_align">Duration <input type="number" id= "straightDuration" max="30000" min="0" step="100" value="0"/> ms</td>
                     </tr>
                 </table>
                 <table  border="0px">
@@ -64,9 +64,9 @@
                     <tr>
                         <td><button class="pushbutton" onclick="zeropower()"><span>Zero</span></td>
                         <td>Min</td>
-                        <td><input type="range" id= "inputSliderPower" class="slider-width300" min="0" max="100" value="0" step="1" oninput="updatePower(this.value)"/></td>
+                        <td><input type="range" id= "inputSliderPower" class="slider-width300" min="0" max="256" value="0" step="1" oninput="updatePower(this.value)"/></td>
                         <td>Max</td>
-                        <td width="50" style="text-align:right"><span id="outputTextPower">0</span> %</td>
+                        <td width="50" class="right_align"><span id="outputTextPower">0</span> %</td>
                     </tr>
                 </table>
 
@@ -75,7 +75,7 @@
                 <table  border="0px">
                     <tr>
                         <td class="left_align"><b>Steering Parameters</b></td>
-                        <td style="text-align:right">Duration <input type="number" id= "steerDuration" max="30000" min="0" step="100" value="0"/> ms</td>
+                        <td class="right_align">Duration <input type="number" id= "steerDuration" max="30000" min="0" step="100" value="0"/> ms</td>
                     </tr>
                     </table>
                 <table  border="0px">
@@ -86,9 +86,9 @@
                     <tr>
                         <td><button class="pushbutton" onclick="zerosteer()"><span>Zero</span></td>
                         <td>Left</td>
-                        <td><input type="range" id= "inputSliderSteer" class="slider-width300" min="-100" max="100" value="0" step="1" oninput="updateSteer(this.value)"/></td>
+                        <td><input type="range" id= "inputSliderSteer" class="slider-width300" min="-256" max="256" value="0" step="1" oninput="updateSteer(this.value)"/></td>
                         <td>Right</td>
-                        <td width="50" style="text-align:right"><span id="outputTextSteer">0</span> %</td>
+                        <td width="50" class="right_align"><span id="outputTextSteer">0</span> %</td>
                     </tr>
                 </table>
 

@@ -123,12 +123,14 @@ function center(newValue)
 function updatePower(newValue)
 {
     console.log("Setting Power to: " +newValue);
+    document.getElementById("outputTextPower").innerHTML = Math.round(100*newValue/256);
     WSSend("p"+newValue);
 }
 
 function updateSteer(newValue)
 {
     console.log("Setting Steering to: " +newValue);
+    document.getElementById("outputTextSteer").innerHTML = Math.round(100*newValue/256);
     WSSend("s"+newValue);
 }
 
