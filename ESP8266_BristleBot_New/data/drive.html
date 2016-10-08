@@ -5,6 +5,56 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>BristleBot - Drive</title>
         <script src="scripts.js"></script>
+        <script>
+            function setupWebSocket() {
+                //var host = window.location.hostname;
+                var host = "192.168.4.1"
+                console.log("Host: " + host);
+                connection = new WebSocket("ws://" + host + ":81/");
+                connection.onopen = function(evt) {
+                    console.log("CONNECTED");
+                    document.getElementById("outputTextStatus").innerHTML = "CONNECTED";
+                };
+                connection.onclose = function(evt) {
+                    console.log("DISCONNECTED");
+                    document.getElementById("outputTextStatus").innerHTML = "DISCONNECTED";
+                };
+                connection.onmessage = function(evt) {
+                    console.log('Server: ', evt.data);
+                    obj = JSON.parse(evt.data);
+                    try {
+                        document.getElementById("leftProx").innerHTML = obj.left.value;
+                        document.getElementById("rightProx").innerHTML = obj.right.value;
+                        if (Number(obj.left.limit) == 1) document.getElementById("leftLimit").className = "indicator_off";
+                        else document.getElementById("leftLimit").className = "indicator_on";
+                        if (Number(obj.right.limit) == 1) document.getElementById("rightLimit").className = "indicator_off";
+                        else document.getElementById("rightLimit").className = "indicator_on";
+                    }
+                    catch(err) {console.log("ERROR: " + err.message)}
+                    
+                    
+                    try {
+                        document.getElementById("outputTextBattery").innerHTML = obj.battery;
+                    }
+                    catch(err) {}
+                };
+                connection.onerror = function(evt) {
+                    console.log("ERROR: " + evt.data);
+                };
+            }
+        
+        function closeSocket()
+        {
+            console.log("Closing Socket");
+            connection.close();
+            return null;
+        }
+        
+        window.onload = setupWebSocket;
+        
+        window.onbeforeunload = closeSocket;
+
+        </script>
         </head>
     <body>
         <p id="content">
@@ -14,16 +64,38 @@
         <center>
             <table  border="0px">
                 <tr>
-                    <td class="left_align">Max</td>
+                    <th class="left_align">Power</th>
                 </tr>
                 <tr>
-                    <td class="left_align"><input type="range" id= "inputSliderPower" class="vertical" orient="vertical" min="0" max="256" value="0" step="1" oninput="updatePower(this.value)"/></td>
+                    <td style="width:15%" class="left_align" rowspan="5"><input type="range" id= "inputSliderPower" class="vertical" orient="vertical" min="0" max="256" value="0" step="1" oninput="updatePower(this.value)"/></td>
+                    <td class="left_align">Max</td>
+                    <td></td>
+                    <th class="left_align" colspan="2">Proximity</th>
                 </tr>
+                <tr>
+                    <td></td>
+                    <td class="right_align">Left:</td>
+                    <td style="width:15%" class="right_align"><span id="leftProx">0</span></td>
+                    <td style="width:15%" class="right_align"><span class="indicator_on" id="leftLimit"></span></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td class="right_align">Right:</td>
+                    <td style="width:15%" class="right_align"><span id="rightProx">0</span></td>
+                    <td style="width:15%" class="right_align"><span class="indicator_on" id="rightLimit"></span></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td class="right_align">Sensor:</td>
+                    <td><button class="pushbutton" onclick="proxEnableFn()"><span>Start</span></td>
+                    <td><button class="pushbutton" onclick="proxDisableFn()"><span>Stop</span></td>
+                    </tr>
                 <tr>
                     <td class="left_align">Min</td>
+                    <th>Steering</th>
+                    <td></td>
+                    <td></td>
                 </tr>
-                <tr>
-                    <td class="left_align">Power</td>
             </table>
             <table>
                 <td class="left_align">Left</td>

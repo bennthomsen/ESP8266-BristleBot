@@ -5,6 +5,56 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>BristleBot - Auto</title>
         <script src="scripts.js"></script>
+        <script>
+            function setupWebSocket() {
+                //var host = window.location.hostname;
+                var host = "192.168.4.1"
+                console.log("Host: " + host);
+                connection = new WebSocket("ws://" + host + ":81/");
+                connection.onopen = function(evt) {
+                    console.log("CONNECTED");
+                    document.getElementById("outputTextStatus").innerHTML = "CONNECTED";
+                };
+                connection.onclose = function(evt) {
+                    console.log("DISCONNECTED");
+                    document.getElementById("outputTextStatus").innerHTML = "DISCONNECTED";
+                };
+                connection.onmessage = function(evt) {
+                    console.log('Server: ', evt.data);
+                    obj = JSON.parse(evt.data);
+                    try {
+                        document.getElementById("leftProx").innerHTML = obj.left.value;
+                        document.getElementById("rightProx").innerHTML = obj.right.value;
+                        if (Number(obj.left.limit) == 1) document.getElementById("leftLimit").className = "indicator_off";
+                        else document.getElementById("leftLimit").className = "indicator_on";
+                        if (Number(obj.right.limit) == 1) document.getElementById("rightLimit").className = "indicator_off";
+                        else document.getElementById("rightLimit").className = "indicator_on";
+                    }
+                    catch(err) {console.log("ERROR: " + err.message)}
+                    
+                    
+                    try {
+                        document.getElementById("outputTextBattery").innerHTML = obj.battery;
+                    }
+                    catch(err) {}
+                };
+                connection.onerror = function(evt) {
+                    console.log("ERROR: " + evt.data);
+                };
+            }
+        
+        function closeSocket()
+        {
+            console.log("Closing Socket");
+            connection.close();
+            return null;
+        }
+        
+        window.onload = setupWebSocket;
+        
+        window.onbeforeunload = closeSocket;
+        </script>
+
     </head>
     <body>
         <p id="content">
@@ -21,12 +71,30 @@
             </table>
 
             <hr color="grey" width="90%" size="1px">
-                <table>
-                    <tr>
-                        <td><button class="pushbutton" onclick="startAuto()"><span>Auto</span></td>
-                        <td><button class="pushbutton" onclick="stopAuto()"><span>Stop</span></td>
-                    </tr>
-                </table>
+            <table>
+            <tr>
+                <th></th>
+                <th>Reading</th>
+                <th>Limit</th>
+            </tr>
+            <tr>
+                <th class="left_align">Left</th>
+                <td><span id="leftProx">0.0</span></td>
+                <td><span class="indicator_on" id="leftLimit"></span></td>
+            </tr>
+            <tr>
+                <th class="left_align">Right</th>
+                <td><span id="rightProx">0.0</span></td>
+                <td><span class="indicator_on" id="rightLimit"></span></td>
+            </tr>
+            </table>
+            <hr color="grey" width="90%" size="1px">
+            <table>
+                <tr>
+                    <td><button class="pushbutton" onclick="startAuto()"><span>Auto</span></td>
+                    <td><button class="pushbutton" onclick="stopAuto()"><span>Stop</span></td>
+                </tr>
+            </table>
             <hr color="grey" width="90%" size="1px">
             <img src="logo.png" alt="UCL logo" style="width:197px; height:52px;">
             </center>

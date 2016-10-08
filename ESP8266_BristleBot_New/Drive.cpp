@@ -15,7 +15,17 @@ void Drive::begin(char* name) {
 
 void Drive::enable() {
   _enable = true;
-  //Serial.println("_enable: true");
+}
+
+void Drive::enable(int value) {
+  if(value){
+    _enable = true;
+    Drive::set();
+  }
+  else {
+    _enable = false;
+    Drive::stop();
+  } 
 }
 
 void Drive::disable() {
@@ -27,6 +37,16 @@ void Drive::set() {
   left.set();
   right.set();
   }
+}
+
+void Drive::leftMax(int val) {
+  _leftMax = val;
+  Drive::_saveConfig();
+}
+
+void Drive::rightMax(int val) {
+  _rightMax = val;
+  Drive::_saveConfig();
 }
 
 void Drive::power(int data) {
@@ -70,9 +90,19 @@ void Drive::hardLeft() {
   right.fullSpeed();  
 }
 
-void Drive::startAutonomous() {
+void Drive::autonomousEnable(int enable) {
+  Serial.print("Auto: ");
+   Serial.println(enable);
+  if (enable) {
    Drive::enable();
   _auto = true;
+  Drive::set();
+  }
+  else {
+  Drive::disable();
+  _auto = false;
+  Drive::stop();
+  }
 }
 
 
@@ -147,9 +177,6 @@ void Drive::_loadConfig() {
     JsonObject& root = jsonBuffer.parseObject(buf.get());
   
     if (root.success()) {
-      root.prettyPrintTo(Serial);
-      Serial.println();
-
       _leftMax = root["leftMax"];
       _rightMax = root["rightMax"];
       _delayLeft = root["delayLeft"];
@@ -174,8 +201,6 @@ void Drive::_saveConfig() {
 
   Serial.print("Writing to file: ");
   Serial.println(_filename);
-  root.prettyPrintTo(Serial);
-  Serial.println();
   
   File configFile = SPIFFS.open(_filename, "w");
   if (configFile) {
@@ -183,5 +208,17 @@ void Drive::_saveConfig() {
     configFile.close();
   }
   else Serial.println("Failed to open config file for writing");
+}
+
+void Drive::configJSON(char* outString, int size) {
+  StaticJsonBuffer<SENSORDATA_JSON_SIZE> jsonBuffer;
+  JsonObject& root = jsonBuffer.createObject();
+  root["leftMax"] = _leftMax;
+  root["rightMax"] = _rightMax;
+  root["delayLeft"] = _delayLeft;
+  root["delayRight"] = _delayRight;
+  root["delay180"] = _delay180;
+
+  root.printTo(outString,size);
 }
   

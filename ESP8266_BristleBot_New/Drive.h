@@ -26,6 +26,8 @@ class Drive
     void begin(char* name);
     void power(int val);
     void steer(int val);
+    void leftMax(int val);
+    void rightMax(int val);
     void forward();
     void turnRight();
     void turnLeft();
@@ -39,13 +41,15 @@ class Drive
     void stop();
     void hardLeft();
     void hardRight();
-    void startAutonomous();
+    void autonomousEnable(int enable);
     void stopAutonomous();
     void autonomous();
     bool auto_en();
-    void set();
+    void set();                // sets motor drive output signals
     void enable();
+    void enable(int value);
     void disable();
+    void configJSON(char* outString, int size); 
 
    
   private:

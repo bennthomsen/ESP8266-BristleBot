@@ -5,6 +5,9 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>BristleBot - Settings</title>
         <script>
+             var Cmd = ["RED", "BLU", "IRF", "IRR"];
+             var obj = "{}";
+            
             function setupWebSocket() {
                 //var host = window.location.hostname;
                 var host = "192.168.4.1"
@@ -14,6 +17,8 @@
                     console.log("CONNECTED");
                     document.getElementById("outputTextStatus").innerHTML = "CONNECTED";
                     getLED(document.getElementById("led"));
+                    WSSend("GET:PRO");
+                    WSSend("GET:DRI");
                 };
                 connection.onclose = function(evt) {
                     console.log("DISCONNECTED");
@@ -21,10 +26,27 @@
                 };
                 connection.onmessage = function(evt) {
                     console.log('Server: ', evt.data);
-                    var obj = JSON.parse(evt.data);
+                    obj = JSON.parse(evt.data);
+                    try {
                     if (obj.period) document.getElementById("period").value = obj.period;
                     if (obj.duty) document.getElementById("duty").value = 100*obj.duty;
                     if (obj.level) document.getElementById("level").value = obj.level;
+                    }
+                    catch(err) {}
+                    
+                    try {
+                        if (obj.threshold.right) document.getElementById("rightThreshold").value = obj.threshold.right;
+                        if (obj.threshold.left) document.getElementById("leftThreshold").value = obj.threshold.left;
+                    	if (obj.cycles) document.getElementById("cycles").value = obj.cycles;
+                    	if (obj.rate) document.getElementById("rate").value = obj.rate;
+                    }
+                    catch(err) {}
+                    
+                    try {
+                        if (obj.leftMax) document.getElementById("leftMotorCal").value = obj.leftMax;
+                        if (obj.rightMax) document.getElementById("rightMotorCal").value = obj.rightMax;
+                    }
+                    catch(err) {}
                 };
                 connection.onerror = function(evt) {
                     console.log("ERROR: " + evt.data);
@@ -47,29 +69,26 @@
                 var left = document.getElementById("leftMotorCal").value;
                 var right = document.getElementById("rightMotorCal").value;
                 console.log("Setting Motor Maximum Power to (L,R): " + left + ", " + right);
-                WSSend("l" + left);
-                WSSend("r" + right);
+                WSSend("SET:DRI:LMA" + left);
+                WSSend("SET:DRI:RMA" + right);
             }
-
-        function updateProximityThr() {
-            var leftThr = document.getElementById("leftProxThr").value;
-            var rightThr = document.getElementById("rightProxThr").value;
-            var cycles = document.getElementById("cycles").value;
-            console.log("Setting Proximity Thresholds to (L,R): " + leftThr + ", " + rightThr);
-            WSSend("a" + leftThr);
-            WSSend("b" + rightThr);
-            WSSend("c" + cycles);
+        
+        function updateProx() {
+            var proxObject = {"threshold":{"left":120,"right":120},"rate":1000,"cycles":7500};
+            proxObject.threshold.left = Number(document.getElementById("leftThreshold").value);
+            proxObject.threshold.right = Number(document.getElementById("rightThreshold").value);
+            proxObject.rate = Number(document.getElementById("rate").value);
+            proxObject.cycles = Number(document.getElementById("cycles").value);
             
+            WSSend("SET:PRO:PRO:" + JSON.stringify(proxObject));
         }
         
         function getLED(sel) {
-            var Cmd = ["RED", "BLU", "IRF", "IRR"];
             WSSend("GET:" + Cmd[sel.selectedIndex]);
         }
-    
+        
         
         function updateLED() {
-            var Cmd = ["RED", "BLU", "IRF"];
             var Obj = {"period": 350,"duty": 0.5,"level": 1};
             
             var e = document.getElementById("led");
@@ -83,11 +102,6 @@
             WSSend("SET:" + Cmd[e.selectedIndex] +":CAL:" + JSON.stringify(Obj));
         }
         
-        
-            function updateAll() {
-                updateMotorCal();
-                updateProximityCal();
-            }
         function closeSocket()
         {
             console.log("Closing Socket");
@@ -109,7 +123,7 @@
         <center>
             <table>
                 <tr>
-                    <td colspan="5" class="left_align"><b>LED settings</b></td>
+                    <td colspan="5" class="left_align"><b>LED Settings</b></td>
                 </tr>
                 <tr>
                     <td></td>
@@ -122,7 +136,8 @@
                         <select name="LED" id= "led" onchange="getLED(this)">
                             <option value="red">Red</option>
                             <option value="blue">Blue</option>
-                            <option value="ir">IR</option>
+                            <option value="ir">IR front</option>
+                            <option value="ir">IR back</option>
                         </select>
                     </td>
                     <td><input type="number" id= "period" max="10000" min="0" step="1"/></td>
@@ -136,52 +151,36 @@
 
             <table>
                 <tr>
-                    <td colspan="3" class="left_align"><b>Motor Max Power Calibration </b></td>
+                    <td colspan="3" class="left_align"><b>Drive Settings </b></td>
                 </tr>
                 <tr>
-                    <td>Left <input type="number" id= "leftMotorCal" max="255" min="0" step="1" value="0"/></td>
-                    <td>Right <input type="number" id= "rightMotorCal" max="255" min="0" step="1" value="0"/></td>
+                    <td>Left <input type="number" id= "leftMotorCal" max="255" min="0" step="1"/></td>
+                    <td>Right <input type="number" id= "rightMotorCal" max="255" min="0" step="1"/></td>
                     <td style="text-align:right"><button class="pushbutton" onclick="updateMotorCal()"><span>Update</span></td>
                     
                 </tr>
             </table>
-            <hr color="grey" width="90%" size="1px">
-            
+            <hr color="grey" width="90%" size="1px">            
             <table>
                 <tr>
-                    <td colspan="2" class="left_align"><b>Proximity Sensor Thresholds</b></td>
-                    <td style="text-align:right"><button class="pushbutton" onclick="updateProximityThr()"><span>Update</span></td>
+                    <td colspan="2" class="left_align"><b>Proximity Sensor</b></td>
                 </tr>
                 <tr>
-                    <th>Sensor</th>
-                    <th>Threshold</th>
-                </tr>
-                <tr>
+                    <td class="left_align">Threshold:</td>
                     <td>Left</td>
-                    <td><input type="number" id= "leftProxThr" max="300" min="0" step="1" value="0"/></td>
-                </tr>
-                <tr>
+                    <td><input type="number" id= "leftThreshold" max="263" min="0" step="1"/></td>
                     <td>Right</td>
-                    <td><input type="number" id= "rightProxThr" max="300" min="0" step="1" value="0"/></td>
+                    <td><input type="number" id= "rightThreshold" max="263" min="0" step="1"/></td>
                 </tr>
                 <tr>
-                    <td>cycles</td>
-                    <td><input type="number" id= "cycles" max="10000" min="0" step="1" value="10000"/></td>
-                </tr>
-                <tr>
+                    <td class="left_align">Rate</td>
+                    <td><input type="number" id= "rate" max="20000" min="100" step="1"/></td>
+                    <td>Cycles</td>
+                    <td><input type="number" id= "cycles" max="20000" min="1" step="1"/></td>
+                    <td style="text-align:right"><button class="pushbutton" onclick="updateProx()"><span>Update</span></td>
                     
                 </tr>
             </table>
-
-
-            <hr color="grey" width="90%" size="1px">
-                <table>
-                    <tr>
-                        <td style="text-align:center"><button class="pushbutton" onclick="updateAll()"><span>Update All</span></td>
-                        <td style="text-align:center"><button class="pushbutton" onclick="sendSettings()"><span>Send</span></td>
-                        <td style="text-align:center"><button class="pushbutton" onclick="getSettings()"><span>Get</span></td>
-                    </tr>
-                </table>
             <hr color="grey" width="90%" size="1px">
             <img src="logo.png" alt="UCL logo" style="width:197px; height:52px;">
             </center>

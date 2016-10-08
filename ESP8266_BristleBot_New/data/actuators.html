@@ -5,6 +5,55 @@
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <title>BristleBot - Actuators</title>
                 <script src="scripts.js"></script>
+                <script>
+                    function setupWebSocket() {
+                        //var host = window.location.hostname;
+                        var host = "192.168.4.1"
+                        console.log("Host: " + host);
+                        connection = new WebSocket("ws://" + host + ":81/");
+                        connection.onopen = function(evt) {
+                            console.log("CONNECTED");
+                            document.getElementById("outputTextStatus").innerHTML = "CONNECTED";
+                        };
+                        connection.onclose = function(evt) {
+                            console.log("DISCONNECTED");
+                            document.getElementById("outputTextStatus").innerHTML = "DISCONNECTED";
+                        };
+                        connection.onmessage = function(evt) {
+                            console.log('Server: ', evt.data);
+                            obj = JSON.parse(evt.data);
+                            try {
+                                document.getElementById("leftProx").innerHTML = obj.left.value;
+                                document.getElementById("rightProx").innerHTML = obj.right.value;
+                                if (Number(obj.left.limit) == 1) document.getElementById("leftLimit").className = "indicator_off";
+                                else document.getElementById("leftLimit").className = "indicator_on";
+                                if (Number(obj.right.limit) == 1) document.getElementById("rightLimit").className = "indicator_off";
+                                else document.getElementById("rightLimit").className = "indicator_on";
+                            }
+                            catch(err) {console.log("ERROR: " + err.message)}
+                            
+                            
+                            try {
+                                document.getElementById("outputTextBattery").innerHTML = obj.battery;
+                            }
+                            catch(err) {}
+                        };
+                        connection.onerror = function(evt) {
+                            console.log("ERROR: " + evt.data);
+                        };
+                    }
+                
+                function closeSocket()
+                {
+                    console.log("Closing Socket");
+                    connection.close();
+                    return null;
+                }
+                
+                window.onload = setupWebSocket;
+                
+                window.onbeforeunload = closeSocket;
+                </script>
     </head>
     <body>
         <p id="content">
@@ -13,23 +62,19 @@
         <hr color="grey" width="90%" size="1px">
             <center>
                 <table border="0">
+
                     <tr>
-                        <td class="left_align">Red LED</td>
-                        <td><button class="pushbutton" onclick="RedLEDOn()"><span>On</span></td>
-                        <td><button class="pushbutton" onclick="RedLEDOff()"><span>Off</span></td>
-                        <td><button class="pushbutton" onclick="RedLEDBlink()"><span>Blink</span></td>
-                    </tr>
-                    <tr>
-                        <td class="left_align">Blue LED</td>
-                        <td><button class="pushbutton" onclick="BlueLEDOn()"><span>On</span></td>
-                        <td><button class="pushbutton" onclick="BlueLEDOff()"><span>Off</span></td>
-                        <td><button class="pushbutton" onclick="BlueLEDBlink()"><span>Flash</span></td>
-                    </tr>
-                    <tr>
-                        <td class="left_align">Front IR LED</td>
-                        <td><button class="pushbutton" onclick="FrontIRLEDOn()"><span>On</span></td>
-                        <td><button class="pushbutton" onclick="FrontIRLEDOff()"><span>Off</span></td>
-                        <td><button class="pushbutton" onclick="FrontIRLEDBlink()"><span>Flash</span></td>
+                        <td class="left_align">
+                            <select name="LED" id= "led">
+                            <option value="red">Red</option>
+                            <option value="blue">Blue</option>
+                            <option value="ir">IR front</option>
+                            <option value="ir">IR back</option>
+                        </select>
+                        </td>
+                        <td><button class="pushbutton" onclick="LEDOn()"><span>On</span></td>
+                        <td><button class="pushbutton" onclick="LEDOff()"><span>Off</span></td>
+                        <td><button class="pushbutton" onclick="LEDBlink()"><span>Blink</span></td>
                     </tr>
                 </table>
                 <hr color="grey" width="90%" size="1px">
@@ -42,11 +87,11 @@
                 </table>
                 <table border="0">
                     <tr>
-                        <td style="width:20%" rowspan="4"><input type="range" id= "inputSliderSteer" min="0" max="255" value="0" step="1" oninput="setLeftMotor(this.value)" class="vertical" orient="vertical"/></td>
+                        <td style="width:20%" rowspan="5"><input type="range" id= "inputSliderSteer" min="0" max="255" value="0" step="1" oninput="setLeftMotor(this.value)" class="vertical" orient="vertical"/></td>
                         <td style="width:15%"></td>
                         <td style="width:15%"><b>Left:</b></td>
                         <td style="width:15%"><b>Right:</b></td>
-                        <td style="width:20%" rowspan="4"><input type="range" id= "inputSliderPower" min="0" max="255" value="0" step="1" oninput="setRightMotor(this.value)" class="vertical" orient="vertical"/></td>
+                        <td style="width:20%" rowspan="5"><input type="range" id= "inputSliderPower" min="0" max="255" value="0" step="1" oninput="setRightMotor(this.value)" class="vertical" orient="vertical"/></td>
                     </tr>
                     <tr>
                         <td style="width:15%"><b>Power:</b></td>
@@ -56,12 +101,17 @@
                     <tr>
                         <td style="width:15%"><b>Proximity:</b></td>
                         <td style="width:15%"><span id="leftProx">0</span></td>
-                        <td style="width:15%"><span id="leftProx">0</span></td>
+                        <td style="width:15%"><span id="rightProx">0</span></td>
                     </tr>
                     <tr>
-                        <td style="width:15%">&nbsp;</td>
-                        <td style="width:15%">&nbsp;</td>
-                        <td style="width:15%">&nbsp;</td>
+                        <td style="width:15%">Limits:</td>
+                        <td style="width:15%"><span class="indicator_on" id="leftLimit"></span></td>
+                        <td style="width:15%"><span class="indicator_on" id="rightLimit"></span></td>
+                    </tr>
+                    <tr>
+                        <td class="right_align">Sensor:</td>
+                        <td><button class="pushbutton" onclick="proxEnableFn()"><span>Start</span></td>
+                        <td><button class="pushbutton" onclick="proxDisableFn()"><span>Stop</span></td>
                     </tr>
                     
                 </table>

@@ -1,6 +1,10 @@
 #ifndef ProximityFunctions_h
 #define ProximityFunctions_h
 
+#include <ArduinoJson.h>
+
+#define SENSORCONFIG_JSON_SIZE (JSON_OBJECT_SIZE(7))
+
 unsigned long lastSense;
 
 struct IRSensor {
@@ -12,7 +16,7 @@ struct IRSensor {
 };
 
 struct Proximity {
-  bool enable;
+  volatile bool enable;
   bool front;
   long rate;
   int cycles;
@@ -25,29 +29,39 @@ Proximity sensors = {false,true,1000,7500,1,0,120,0,false,false,0,120,0,false,fa
 
 // Function prototypes
 void initialiseProximity();
+void proximityEnable(int val);
 void leftProximity();
 void rightProximity();
 void leftProximityStart();
 void leftProximityStart();
 void sensorInterrupts();
 void acquireProximity();
+void proxUpdateConfig(char *data);
+void proxConfigJSON(char* outString, int size);
 
 void initialiseProximity() {
     pinMode(IRRXL, INPUT_PULLUP);
     pinMode(IRRXR, INPUT_PULLUP);
 }
 
+void proximityEnable(int val) {
+  if (val) {
+    sensors.enable= true;
+  }
+  else {
+    sensors.enable= false;
+  }
+}
+
 void leftProximity() {
   detachInterrupt(digitalPinToInterrupt(IRRXL));
   sensors.left.value = millis() - sensors.left.start;
-  sensors.right.limit = (sensors.right.value > sensors.right.threshold);
   sensors.left.done = true;
 }
 
 void rightProximity() {
   detachInterrupt(digitalPinToInterrupt(IRRXR));
   sensors.right.value = millis() - sensors.right.start;
-  sensors.right.limit = (sensors.right.value > sensors.right.threshold);
   sensors.right.done = true;
 }
 
@@ -75,20 +89,44 @@ void acquireProximity() {
       lastSense = millis();
       if (sensors.front) {
         ir.off();
-        blue.on();
+        irRear.off();
         sensorInterrupts();
         ir.mod38k(sensors.cycles);
-        blue.off();
       }
       else {
         ir.off();
-        red.on();
+        irRear.off();
         sensorInterrupts();
         irRear.mod38k(sensors.cycles);
-        red.off();
       }
     }
   }
+}
+
+void proxConfigJSON(char* outString, int size) {
+  StaticJsonBuffer<SENSORCONFIG_JSON_SIZE> jsonBuffer;
+  JsonObject& root = jsonBuffer.createObject();
+  JsonObject& thresh = root.createNestedObject("threshold");
+  root["rate"] = sensors.rate;
+  root["cycles"] = sensors.cycles;
+  thresh["left"] = sensors.left.threshold;
+  thresh["right"] = sensors.right.threshold;
+
+  root.printTo(outString,size);
+  Serial.println(outString);
+}
+
+void proxUpdateConfig(char *data) {
+  StaticJsonBuffer<SENSORCONFIG_JSON_SIZE> jsonBuffer;
+  JsonObject& root = jsonBuffer.parseObject(data);
+  
+  if (root.success()) {
+    sensors.rate = root["rate"];
+    sensors.cycles = root["cycles"];
+    sensors.left.threshold = root["threshold"]["left"];
+    sensors.right.threshold = root["threshold"]["right"];
+  }
+    else Serial.println("Failed to parse JSON"); 
 }
 
 #endif
