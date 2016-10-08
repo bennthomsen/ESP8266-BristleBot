@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="indexstyle.css">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>BristleBot - Drive</title>
+        <script src="scripts.js"></script>
+        </head>
+    <body>
+        <p id="content">
+        <div class="title">BristleBot Drive</div>
+        <div class="status">Connection status: <span id="outputTextStatus">UNCONNECTED</span></div>
+        <hr color="grey" width="90%" size="1px">
+        <center>
+            <table  border="0px">
+                <tr>
+                    <td class="left_align">Max</td>
+                </tr>
+                <tr>
+                    <td class="left_align"><input type="range" id= "inputSliderPower" class="vertical" orient="vertical" min="0" max="256" value="0" step="1" oninput="updatePower(this.value)"/></td>
+                </tr>
+                <tr>
+                    <td class="left_align">Min</td>
+                </tr>
+                <tr>
+                    <td class="left_align">Power</td>
+            </table>
+            <table>
+                <td class="left_align">Left</td>
+                <td><input type="range" id= "inputSliderSteer" class="slider-width300" min="-256" max="256" value="0" step="1" oninput="updateSteer(this.value)"/></td>
+                <td>Right</td>
+                </tr>
+            </table>
+            <hr color="grey" width="90%" size="1px">
+            <table>
+                <tr>
+                    <td><button class="pushbutton" onclick="startMotors()"><span>Start</span></td>
+                    <td><button class="pushbutton" onclick="center()"><span>Center</span></td>
+                    <td><button class="pushbutton" onclick="stopMotors()"><span>Stop</span></td>
+                </tr>
+            </table>
+            <hr color="grey" width="90%" size="1px">
+            <img src="logo.png" alt="UCL logo" style="width:197px; height:52px;">
+            </center>
+        </p>
+    </body>
+</html>

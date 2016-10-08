@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="indexstyle.css">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>BristleBot - Auto</title>
+        <script src="scripts.js"></script>
+    </head>
+    <body>
+        <p id="content">
+
+        <div class="title">BristleBot Steer</div>
+        <div class="status">Connection status: <span id="outputTextStatus">UNCONNECTED</span></div>
+        <hr color="grey" width="90%" size="1px">
+        <center>
+            <table>
+                <td class="left_align">Left</td>
+                <td><input type="range" id= "inputSliderPower" class="slider-width300" min="0" max="255" value="0" step="1" oninput="updateAutoPower(this.value)"/></td>
+                <td>Right</td>
+                </tr>
+            </table>
+
+            <hr color="grey" width="90%" size="1px">
+                <table>
+                    <tr>
+                        <td><button class="pushbutton" onclick="startAuto()"><span>Auto</span></td>
+                        <td><button class="pushbutton" onclick="stopAuto()"><span>Stop</span></td>
+                    </tr>
+                </table>
+            <hr color="grey" width="90%" size="1px">
+            <img src="logo.png" alt="UCL logo" style="width:197px; height:52px;">
+            </center>
+
+        </p>
+    </body>
+</html>

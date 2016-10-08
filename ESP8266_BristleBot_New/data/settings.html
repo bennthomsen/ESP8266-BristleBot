@@ -4,8 +4,45 @@
         <link rel="stylesheet" type="text/css" href="indexstyle.css">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>BristleBot - Settings</title>
-        <script src="scripts.js"></script>
         <script>
+            function setupWebSocket() {
+                //var host = window.location.hostname;
+                var host = "192.168.4.1"
+                console.log("Host: " + host);
+                connection = new WebSocket("ws://" + host + ":81/");
+                connection.onopen = function(evt) {
+                    console.log("CONNECTED");
+                    document.getElementById("outputTextStatus").innerHTML = "CONNECTED";
+                    getLED(document.getElementById("led"));
+                };
+                connection.onclose = function(evt) {
+                    console.log("DISCONNECTED");
+                    document.getElementById("outputTextStatus").innerHTML = "DISCONNECTED";
+                };
+                connection.onmessage = function(evt) {
+                    console.log('Server: ', evt.data);
+                    var obj = JSON.parse(evt.data);
+                    if (obj.period) document.getElementById("period").value = obj.period;
+                    if (obj.duty) document.getElementById("duty").value = 100*obj.duty;
+                    if (obj.level) document.getElementById("level").value = obj.level;
+                };
+                connection.onerror = function(evt) {
+                    console.log("ERROR: " + evt.data);
+                };
+            }
+        
+        function WSSend(data){
+            try {
+                console.log("Sending: " + data);
+                connection.send(data);
+            }
+            catch(err) {
+                console.log("ERROR: " + err.message);
+                console.log("Trying to reestablish connection");
+                setupWebSocket();
+            }
+        }
+        
             function updateMotorCal() {
                 var left = document.getElementById("leftMotorCal").value;
                 var right = document.getElementById("rightMotorCal").value;
@@ -13,16 +50,54 @@
                 WSSend("l" + left);
                 WSSend("r" + right);
             }
+
+        function updateProximityThr() {
+            var leftThr = document.getElementById("leftProxThr").value;
+            var rightThr = document.getElementById("rightProxThr").value;
+            var cycles = document.getElementById("cycles").value;
+            console.log("Setting Proximity Thresholds to (L,R): " + leftThr + ", " + rightThr);
+            WSSend("a" + leftThr);
+            WSSend("b" + rightThr);
+            WSSend("c" + cycles);
             
+        }
+        
+        function getLED(sel) {
+            var Cmd = ["RED", "BLU", "IRF", "IRR"];
+            WSSend("GET:" + Cmd[sel.selectedIndex]);
+        }
+    
+        
+        function updateLED() {
+            var Cmd = ["RED", "BLU", "IRF"];
+            var Obj = {"period": 350,"duty": 0.5,"level": 1};
+            
+            var e = document.getElementById("led");
+            //var led = e.options[e.selectedIndex].value;
+            console.log(e.selectedIndex);
+            
+            Obj.period = Number(document.getElementById("period").value);
+            Obj.duty = Number(document.getElementById("duty").value)/100;
+            Obj.level = Number(document.getElementById("level").value);
+            
+            WSSend("SET:" + Cmd[e.selectedIndex] +":CAL:" + JSON.stringify(Obj));
+        }
+        
+        
             function updateAll() {
                 updateMotorCal();
                 updateProximityCal();
             }
-        
-        function GetSettings() {
-            WSSend("SET");
+        function closeSocket()
+        {
+            console.log("Closing Socket");
+            connection.close();
+            return null;
         }
-            
+        
+        window.onload = setupWebSocket;
+        
+        window.onbeforeunload = closeSocket;
         
         </script>
     </head>
@@ -32,6 +107,33 @@
         <div class="status">Connection status: <span id="outputTextStatus">UNCONNECTED</span></div>
         <hr color="grey" width="90%" size="1px">
         <center>
+            <table>
+                <tr>
+                    <td colspan="5" class="left_align"><b>LED settings</b></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>Period (ms)</td>
+                    <td>Duty (%)</td>
+                    <td>Level</td>
+                </tr>
+                <tr>
+                    <td>
+                        <select name="LED" id= "led" onchange="getLED(this)">
+                            <option value="red">Red</option>
+                            <option value="blue">Blue</option>
+                            <option value="ir">IR</option>
+                        </select>
+                    </td>
+                    <td><input type="number" id= "period" max="10000" min="0" step="1"/></td>
+                    <td><input type="number" id= "duty" max="100" min="0" step="1"/></td>
+                    <td><input type="number" id= "level" max="23" min="1" step="1"/></td>
+                    <td style="text-align:right"><button class="pushbutton" onclick="updateLED()"><span>Update</span></td>
+                </tr>
+                
+            </table>
+            <hr color="grey" width="90%" size="1px">
+
             <table>
                 <tr>
                     <td colspan="3" class="left_align"><b>Motor Max Power Calibration </b></td>
@@ -63,6 +165,10 @@
                     <td><input type="number" id= "rightProxThr" max="300" min="0" step="1" value="0"/></td>
                 </tr>
                 <tr>
+                    <td>cycles</td>
+                    <td><input type="number" id= "cycles" max="10000" min="0" step="1" value="10000"/></td>
+                </tr>
+                <tr>
                     
                 </tr>
             </table>
@@ -72,6 +178,8 @@
                 <table>
                     <tr>
                         <td style="text-align:center"><button class="pushbutton" onclick="updateAll()"><span>Update All</span></td>
+                        <td style="text-align:center"><button class="pushbutton" onclick="sendSettings()"><span>Send</span></td>
+                        <td style="text-align:center"><button class="pushbutton" onclick="getSettings()"><span>Get</span></td>
                     </tr>
                 </table>
             <hr color="grey" width="90%" size="1px">

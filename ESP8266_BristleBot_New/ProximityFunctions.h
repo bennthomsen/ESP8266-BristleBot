@@ -1,75 +1,94 @@
 #ifndef ProximityFunctions_h
 #define ProximityFunctions_h
 
-volatile int pulselengthL = 0;
-volatile int pulselengthR = 0;
+unsigned long lastSense;
 
-volatile unsigned long LeftStart = 0;
-volatile unsigned long RightStart = 0;
+struct IRSensor {
+  int value;
+  int threshold;
+  long start;
+  bool limit;
+  bool done;
+};
 
-volatile boolean LeftAvailable = false;
-volatile boolean RightAvailable = false;
+struct Proximity {
+  bool enable;
+  bool front;
+  long rate;
+  int cycles;
+  int level;
+  struct IRSensor left;
+  struct IRSensor right;
+};
+
+Proximity sensors = {false,true,1000,7500,1,0,120,0,false,false,0,120,0,false,false};
+
+// Function prototypes
+void initialiseProximity();
+void leftProximity();
+void rightProximity();
+void leftProximityStart();
+void leftProximityStart();
+void sensorInterrupts();
+void acquireProximity();
+
+void initialiseProximity() {
+    pinMode(IRRXL, INPUT_PULLUP);
+    pinMode(IRRXR, INPUT_PULLUP);
+}
 
 void leftProximity() {
   detachInterrupt(digitalPinToInterrupt(IRRXL));
-  pulselengthL = millis() - LeftStart;
-  LeftAvailable = true;
-   Sprint("LP ");
-  Sprintln(pulselengthR);
-  //frontdet = front;
+  sensors.left.value = millis() - sensors.left.start;
+  sensors.right.limit = (sensors.right.value > sensors.right.threshold);
+  sensors.left.done = true;
 }
 
 void rightProximity() {
   detachInterrupt(digitalPinToInterrupt(IRRXR));
-  pulselengthR = millis() - RightStart;
-  RightAvailable = true;
-  Sprint("RP ");
-  Sprintln(pulselengthR);
-  
-  //frontdet = front;
+  sensors.right.value = millis() - sensors.right.start;
+  sensors.right.limit = (sensors.right.value > sensors.right.threshold);
+  sensors.right.done = true;
 }
 
 void leftProximityStart() {
   detachInterrupt(digitalPinToInterrupt(IRRXL));
-  LeftStart = millis();
+  sensors.left.start = millis();
   attachInterrupt(digitalPinToInterrupt(IRRXL), leftProximity, RISING);
 }
 
 void rightProximityStart() {
   detachInterrupt(digitalPinToInterrupt(IRRXR));
-  RightStart = millis();
+  sensors.right.start= millis();
   attachInterrupt(digitalPinToInterrupt(IRRXR),  rightProximity, RISING);
 }
 
 
-void IRmod(char pin, int cycles) {
+void sensorInterrupts() {
   attachInterrupt(digitalPinToInterrupt(IRRXL), leftProximityStart, FALLING);
   attachInterrupt(digitalPinToInterrupt(IRRXR), rightProximityStart, FALLING);
-   for (int i=0; i <= cycles; i++){
-        digitalWrite(pin, LOW);
-        delayMicroseconds(6);
-        digitalWrite(pin, HIGH);
-        delayMicroseconds(18);
+}
+
+void acquireProximity() {
+  if (sensors.enable) {
+    if(millis() - lastSense >= sensors.rate) {
+      lastSense = millis();
+      if (sensors.front) {
+        ir.off();
+        blue.on();
+        sensorInterrupts();
+        ir.mod38k(sensors.cycles);
+        blue.off();
       }
+      else {
+        ir.off();
+        red.on();
+        sensorInterrupts();
+        irRear.mod38k(sensors.cycles);
+        red.off();
+      }
+    }
+  }
 }
-
-float ProximityCal(int raw, float slope, float offset) {
-  float distance = slope*float(raw) + offset;
-  return distance;
-}
-
-void acquireProximity(void) {
-        if (front) {
-          digitalWrite(BLUELED, LOW);
-          IRmod(IRTX, 10000); 
-          digitalWrite(BLUELED, HIGH);
-        }
-        else {
-          digitalWrite(REDLEDBACK, LOW);
-          IRmod(IRTXBACK, 10000);
-          digitalWrite(REDLEDBACK, HIGH);
-        }
-}
-
 
 #endif

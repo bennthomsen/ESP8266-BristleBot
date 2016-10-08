@@ -1,10 +1,3 @@
-var JSONObj = {"led":{"red":{"state":0},"blue":{"state":0},"ir":{"state":0}},
-    "proximity":{"leftThreshold":200,"rightThreshold":200,"cycles":7500,"level":1,"rate":1000},
-    "drive":{"leftMax":255,"rightMax":255,"delayLeft":500,"delayRight":500,"delay180":500}
-};
-
-
-
 function setupWebSocket() {
     var host = window.location.hostname;
     var host = "192.168.4.1"
@@ -49,60 +42,58 @@ function getSettings() {
     WSSend(toSend);
 }
 
-function sendSettings() {
-    JSONObj.led.red.state = 1;
-    console.log(JSONObj.led.red.state);
-    WSSend(JSON.stringify(JSONObj));
-}
-
 function RedLEDBlink() {
-    var toSend = "SET:RED:BLI";
+    var toSend = "RED_LED_BLINK";
     WSSend(toSend);
 }
 
 function RedLEDOn() {
-    var toSend = "SET:RED:ENA";
+    var toSend = "RED_LED_ON";
     WSSend(toSend);
 }
 
 function RedLEDOff() {
-    var toSend = "SET:RED:DIS";
+    var toSend = "RED_LED_OFF";
     WSSend(toSend);
 }
 
-
 function BlueLEDBlink() {
-    var toSend = "SET:BLU:BLI";
+    var toSend = "BLUE_LED_BLINK";
     WSSend(toSend);
 }
 
 function BlueLEDOn() {
-    var toSend = "SET:BLU:ENA";
+    var toSend = "BLUE_LED_ON";
     WSSend(toSend);
 }
 
 function BlueLEDOff() {
-    var toSend = "SET:BLU:DIS";
+    var toSend = "BLUE_LED_OFF";
     WSSend(toSend);
 }
 
 function FrontIRLEDBlink() {
-    var toSend = "SET:IRF:BLI";
+    var toSend = "FRONT_LED_BLINK";
     WSSend(toSend);
 }
 
 function FrontIRLEDOn() {
-    var toSend = "SET:IRF:ENA";
+    var toSend = "FRONT_LED_ON";
     WSSend(toSend);
 }
 
 function FrontIRLEDOff() {
-    var toSend = "SET:IRF:DIS";
+    var toSend = "FRONT_LED_OFF";
     WSSend(toSend);
 }
 
 function battFn() {
     var toSend = "BATT";
+    WSSend(toSend);
+}
+
+function proxSingle() {
+    var toSend = "PROX_SINGLE";
     WSSend(toSend);
 }
 
@@ -117,15 +108,6 @@ function proxDisableFn() {
     WSSend(toSend);
 }
 
-function startAuto() {
-    var toSend = "AUTO_EN";
-    WSSend(toSend);
-}
-
-function stopAuto() {
-    WSSend("AUTO_DIS");
-}
-
 function stopMotors() {
     console.log("Stopping");
     WSSend("STOP");
@@ -133,7 +115,8 @@ function stopMotors() {
 
 function startMotors() {
     console.log("Starting Motors");
-    WSSend("START");
+    WSSend("s" + document.getElementById("inputSliderSteer").value);
+    WSSend("p" + document.getElementById("inputSliderPower").value);
 }
 
 function center(newValue)
@@ -148,14 +131,6 @@ function updatePower(newValue)
     WSSend("p"+newValue);
  //   document.getElementById("outputTextPower").innerHTML = Math.round(100*newValue/256);
 
-}
-
-function updateAutoPower(newValue)
-{
-    console.log("Setting Power to: " +newValue);
-    WSSend("q"+newValue);
-    //   document.getElementById("outputTextPower").innerHTML = Math.round(100*newValue/256);
-    
 }
 
 function updateSteer(newValue)

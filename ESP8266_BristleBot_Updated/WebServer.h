@@ -8,9 +8,6 @@
 
 ESP8266WebServer server(80);
 
-char *ssid = "BristleBot_0000";
-const char *password = "uclbristlebot";
-
 bool loadFromSpiffs(String path){
   String dataType = "text/plain";
   if(path.endsWith("/")) path += "index.html";
@@ -49,26 +46,6 @@ void handleNotFound(){
   }
   server.send(404, "text/plain", message);
   Sprintln(message);
-}
-
-void configureAccessPoint() {
-  WiFi.mode(WIFI_AP);
-
-  // Set SSID based on device MAC address
-  String mac = WiFi.macAddress();
-  Sprintln("MAC address: " + mac);
-  ssid[11] = mac.charAt(12);
-  ssid[12] = mac.charAt(13);
-  ssid[13] = mac.charAt(15);
-  ssid[14] = mac.charAt(16);
-  Sprint("SSID: ");
-  Sprintln(ssid);
-  Sprint("Password: ");
-  Sprintln(password);
-  
-  WiFi.softAP(ssid, password);
-  IPAddress myIP = WiFi.softAPIP();
-  Sprintln("AP IP address: " + myIP);
 }
 
 #endif

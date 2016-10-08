@@ -1,18 +1,29 @@
-#ifndef WebSocketServer_h
-#define WebSocketServer_h
-
-#include <WebSocketsServer.h>
-
-WebSocketsServer webSocket = WebSocketsServer(81);
-
- // state machine states
-unsigned int state;
-uint8_t socketNumber;
 #define SEQUENCE_IDLE 0x00
 #define GET_SAMPLE 0x10
 #define GET_SAMPLE__WAITING 0x12 
 
+
+
   //----------------------------------------------------------------------- 
+void sendProximity() {
+  if (sensors.left.done & sensors.right.done) {
+    Sprint("Sending Proximity");
+    sensors.left.done = false;
+    sensors.right.done = false;
+    if (drive.auto_en()){
+    if (sensors.left.limit & sensors.right.limit) {
+          drive.turn180();
+    }
+    else if(sensors.left.limit) {
+      drive.turnRight();
+    }
+    else if(sensors.right.limit) {
+      drive.turnLeft();
+    }
+    }
+    webSocket.sendTXT(socketNumber, "{\"left\":" + String(sensors.left.value) + ",\"right\":" + String(sensors.right.value) + "}");
+  }
+}
 
   void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length) {
 
@@ -22,62 +33,68 @@ uint8_t socketNumber;
         case WStype_CONNECTED: {
           IPAddress ip = webSocket.remoteIP(num);
           socketNumber = num; 
-
          }
           break;
-        case WStype_TEXT:{
-            String text = String((char *) &payload[0]);
-            
-          if(text=="RED_LED_BLINK") {
-             heartbeat_enable = true;
-            Sprintln("Red LED blink");
-           }
-
-          if(text=="RED_LED_ON") {
-            heartbeat_enable = false;
-            digitalWrite(REDLED,LOW);
-            Sprintln("Red LED on");
-           }
-
-          if(text=="RED_LED_OFF") {
-            heartbeat_enable = false;
-            digitalWrite(REDLED,HIGH);
-            Sprintln("Red LED off");
-           }
-
-          if(text=="BLUE_LED_BLINK") {
-            digitalWrite(BLUELED,LOW);
-            delay(500);
-            digitalWrite(BLUELED,HIGH);
-            Sprintln("BLUE LED blink");
-           }
-
-          if(text=="BLUE_LED_ON") {
-            digitalWrite(BLUELED,LOW);
-            Sprintln("BLUE LED on");
-           }
-
-          if(text=="BLUE_LED_OFF") {
-            digitalWrite(BLUELED,HIGH);
-            Sprintln("BLUE LED off");
-           }
-
-          if(text=="FRONT_LED_BLINK") {
-            digitalWrite(IRTX,LOW);
-            delay(500);
-            digitalWrite(IRTX,HIGH);
-            Sprintln("FRONT LED blink");
-           }
-
-          if(text=="FRONT_LED_ON") {
-            digitalWrite(IRTX,LOW);
-            Sprintln("FRONT LED on");
-           }
-
-          if(text=="FRONT_LED_OFF") {
-            digitalWrite(IRTX,HIGH);
-            Sprintln("FRONT LED off");
-           }
+        case WStype_TEXT: {
+          String text = String((char *) &payload[0]);
+          String cmdtype = text.substring(0,3);
+          Serial.println(cmdtype);
+          if(cmdtype=="GET"){
+            String cmd = text.substring(4,7);
+            Serial.println(cmd);
+            if(cmd=="RED") {
+              char toSend[100];
+              red.configJSON(toSend, sizeof(toSend));
+              webSocket.sendTXT(num, toSend);
+              Sprintln("Sending red LED Settings");
+            }
+            if(cmd=="BLU") {
+              char toSend[100];
+              blue.configJSON(toSend, sizeof(toSend));
+              webSocket.sendTXT(num, toSend);
+              Sprintln("Sending blue LED Settings");
+             }
+             if(cmd=="IRF") {
+              char toSend[100];
+              ir.configJSON(toSend, sizeof(toSend));
+              webSocket.sendTXT(num, toSend);
+              Sprintln("Sending front IR LED Settings");
+             } 
+             if(cmd=="IRB") {
+              char toSend[100];
+              irRear.configJSON(toSend, sizeof(toSend));
+              webSocket.sendTXT(num, toSend);
+              Sprintln("Sending rear IR LED Settings");
+             }        
+          }
+          else if (cmdtype=="SET") {
+            String cmd = text.substring(4,7);
+            String action = text.substring(8,11);
+            if(cmd=="RED") {
+              if (action=="BLI") red.blinkOn();
+              else if (action=="ENA") red.on();
+              else if (action=="DIS") red.off();
+              else if (action=="CAL") red.updateConfig((char *) &payload[12]);
+            }
+            if(cmd=="BLU") {
+              if (action=="BLI") blue.blinkOn();
+              else if (action=="ENA") blue.on();
+              else if (action=="DIS") blue.off();
+              else if (action=="CAL") blue.updateConfig((char *) &payload[12]);
+            }
+            if(cmd=="IRF") {
+              if (action=="BLI") ir.blinkOn();
+              else if (action=="ENA") ir.on();
+              else if (action=="DIS") ir.off();
+              else if (action=="CAL") ir.updateConfig((char *) &payload[12]);
+            }
+            if(cmd=="IRR") {
+              if (action=="BLI") irRear.blinkOn();
+              else if (action=="ENA") irRear.on();
+              else if (action=="DIS") irRear.off();
+              else if (action=="CAL") irRear.updateConfig((char *) &payload[12]);
+            }
+          }
 
           if(text=="BATT") {
             int adc = analogRead(A0);
@@ -90,127 +107,99 @@ uint8_t socketNumber;
             webSocket.sendTXT(num, reply);
            }
 
-           if(text=="SET") {
-            String reply = "{\"motor\":{\"leftmax\":";
-            reply += leftmotor;
-            reply += ",\"rightmax\":";
-            reply += rightmotor;
-            reply += "}}";
-            webSocket.sendTXT(num, reply);
-           }
-
-           if(text=="PROX_SINGLE") {
-            acquireProximity();
-            Sprintln("Proximity Sensor Single");
+           if(text=="SETTINGS") {
+            sendConfig(num);
            }
 
            if(text=="PROX_EN") {
-            prox_sensor_run = true;
+            sensors.enable= true;
             Sprintln("Run Proximity Sensor");
            }
 
            if(text=="PROX_DIS") {
-            prox_sensor_run = false;
+            sensors.enable = false;
             Sprintln("Stop Proximity Sensor");
            }
+
+           if(text=="AUTO_EN") {
+            sensors.enable= true;
+            drive.startAutonomous();
+            Sprintln("Starting Autonomous operation");
+           }
+
+           if(text=="AUTO_DIS") {
+            sensors.enable= false;
+            drive.stopAutonomous();
+            Sprintln("Stopping Autonomous operation");
+           }
            
-          if(text.startsWith("s")) {
+           if(text=="START"){
+             drive.enable();
+             drive.set();
+            }
+
+           if(text=="STOP"){
+             drive.stop();
+             drive.disable();
+            }
+            
+            if(text.startsWith("s")) {
               String xVal=(text.substring(text.indexOf("s")+1,text.length())); 
-              steer = xVal.toInt();
-              if (steer < 0) {
-                motorleft = (256+steer)*power*leftmotor>>16;
-                analogWrite(LEFT,motorleft);
-                motorright= power*rightmotor>>8;
-                analogWrite(RIGHT,motorright);
-              }
-              else {
-                motorright = (256-steer)*power*rightmotor>>16;
-                analogWrite(LEFT,motorleft);
-                motorleft= power*leftmotor>>8;
-                analogWrite(RIGHT,motorright);
-              }
-              
-            Sprint( "Set Motor Steering & Power (L,R):");
-            Sprint(motorleft);
-            Sprint(", ");
-            Sprintln(motorright);
-          }
+              drive.enable();
+              drive.steer(xVal.toInt());
+            }
 
 
            if(text.startsWith("p")){
-            String yVal=(text.substring(text.indexOf("p")+1,text.length())); 
-            power = yVal.toInt();
-            motorright= power*rightmotor>>8;
-            motorleft= power*leftmotor>>8;      
-            analogWrite(RIGHT,motorright);
-            analogWrite(LEFT,motorleft);
-            
-            Sprint( "Set Motor Power (L,R):");
-            Sprint(motorleft);
-            Sprint(", ");
-            Sprintln(motorright);
+            String yVal=(text.substring(text.indexOf("p")+1,text.length()));
+            drive.enable();
+            drive.power(yVal.toInt());
+           }
+
+           if(text.startsWith("q")){
+            String yVal=(text.substring(text.indexOf("q")+1,text.length())); 
+            drive.power(yVal.toInt());
            }
 
            if(text.startsWith("e")){
-            String yVal=(text.substring(text.indexOf("e")+1,text.length())); 
-            motorleft = yVal.toInt();     
-            analogWrite(LEFT,motorleft);
-            
-            Sprint( "Set Motor Power (L):");
-            Sprintln(motorleft);
+            String yVal=(text.substring(text.indexOf("e")+1,text.length()));
+            drive.left.value(yVal.toInt());
+            drive.left.set();
            }
 
             if(text.startsWith("f")){
-            String yVal=(text.substring(text.indexOf("f")+1,text.length())); 
-            motorright = yVal.toInt();     
-            analogWrite(RIGHT,motorright);
-            
-            Sprint( "Set Motor Power (R):");
-            Sprintln(motorright);
+            String yVal=(text.substring(text.indexOf("f")+1,text.length()));
+            drive.right.value(yVal.toInt());
+            drive.right.set();
            }
-
-           if(text=="RESET"){
-             analogWrite(RIGHT,LOW);
-             analogWrite(LEFT,LOW);
-             power = 0;
-             Sprintln("reset");
-            }
 
             if(text.startsWith("r")){
               String val=(text.substring(text.indexOf("r")+1,text.length())); 
-              rightmotor = val.toInt();
+              drive.right.maximum(val.toInt());
               Sprintln("Right Threshold: " + val);
             }    
 
             if(text.startsWith("l")){
               String val=(text.substring(text.indexOf("l")+1,text.length())); 
-              leftmotor = val.toInt();
+              drive.left.maximum(val.toInt());
               Sprintln("Left Threshold: " + val);
             }
 
             if(text.startsWith("a")){
               String val=(text.substring(text.indexOf("a")+1,text.length())); 
-              leftProxSlope = val.toInt();
-              Sprintln("Left Proximity Slope: " + val);
-            }    
-
+              sensors.left.threshold = val.toInt();
+              Sprintln("Left Threshold: " + val);
+            }
             if(text.startsWith("b")){
               String val=(text.substring(text.indexOf("b")+1,text.length())); 
-              leftProxOffset = val.toInt();
-              Sprintln("Left Proximity Offset: " + val);
+              sensors.right.threshold = val.toInt();
+              Sprintln("Right Threshold: " + val);
             }
-
             if(text.startsWith("c")){
               String val=(text.substring(text.indexOf("c")+1,text.length())); 
-              rightProxSlope = val.toInt();
-              Sprintln("Right Proximity Slope: " + val);
-            }    
-
-            if(text.startsWith("d")){
-              String val=(text.substring(text.indexOf("d")+1,text.length())); 
-              rightProxOffset = val.toInt();
-              Sprintln("Right Proximity Offset: " + val);
-            }  
+              sensors.cycles = val.toInt();
+              Sprintln("Cycles: " + val);
+            }
         }
         break;
         
@@ -222,19 +211,5 @@ uint8_t socketNumber;
     }
 }
 
-void sendProximity() {
-          if (LeftAvailable) {
-            LeftAvailable = false;
-            float LeftProx = ProximityCal(pulselengthL, leftProxSlope, leftProxOffset);
-            Sprintln(LeftProx);
-            webSocket.sendTXT(socketNumber, "{\"left\":" + String(pulselengthL) + ",\"leftCal\":" + String(LeftProx) + "}");
-          }
-          if (RightAvailable) {
-            RightAvailable = false;
-            float RightProx = ProximityCal(pulselengthL, rightProxSlope, rightProxOffset);
-            Sprintln(RightProx);
-            webSocket.sendTXT(socketNumber, "{\"right\":" + String(pulselengthR) + ",\"rightCal\":" + String(RightProx) + "}");
-          }
-}
 
-#endif
+
