@@ -123,15 +123,15 @@
                 document.getElementById("ycoord").innerHTML = event.gamma.toFixed(1);
                 
                 
-                //var power         = Math.round(-y_r/40*255)+255;
-                document.getElementById("power").innerHTML = r.toFixed(2);
+                var power = Math.round(r*255);
+                document.getElementById("power").innerHTML = power.toFixed(2);
                 
-                //var steer = Math.round(x_r/20*255);
-                document.getElementById("steer").innerHTML = theta.toFixed(2);
+                var steer = Math.round(2*theta/Math.PI*255);
+                document.getElementById("steer").innerHTML = steer.toFixed(2);
             
                 
-                //setPower(power_rounded);
-                //setSteer(steer_rounded);
+                updatePower(r*255);
+                updateSteer(2*theta/Math.PI*255);
                 
                 
             }
@@ -149,14 +149,15 @@
                     <td class="right_align"><span id="ycoord">0</span></td>
                 </tr>
                 <tr>
-                    <td class="left_align"> xn:</td>
+                    <td class="left_align"> Power:</td>
                     <td><span id="power">0</span></td>
                     <td>&nbsp;&nbsp;&nbsp;</td>
-                    <td style="text-align:left"> yn:</td>
+                    <td style="text-align:left"> Steer:</td>
                     <td class="right_align"><span id="steer">0</span></td>
                 </tr>
                 </table>
             <hr color="grey" width="90%" size="1px">
+            Annabel is cool. Hello Bob
             <img src="logo.png" alt="UCL logo" style="width:197px; height:52px;">
         </center>
         </div>
