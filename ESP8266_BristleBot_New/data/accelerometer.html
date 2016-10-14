@@ -90,11 +90,11 @@
                     y = event.beta;
                     x = event.gamma;
                     
-                    if (y >  89) { y =  89};
+                    if (y >  40) { y =  40};
                     if (y <   0) { y =   0};
                     
-                    if (x >  89) { x =  89};
-                    if (x < -89) { x = -89};
+                    if (x >  20) { x =  20};
+                    if (x < -20) { x = -20};
                 }
                 else {
                     x = event.beta;
@@ -119,8 +119,8 @@
                 
                 // 10 is half the size of the ball
                 // It center the positioning point to the center of the ball
-                ball.style.top  = (maxX*y/180 - 10) + "px";
-                ball.style.left = (maxY*x/180 - 10) + "px";
+                ball.style.top  = (maxX*y/40 - 10) + "px";
+                ball.style.left = (maxY*x/40 - 10) + "px";
                 
                 document.getElementById("xcoord").innerHTML = event.beta;
                 document.getElementById("ycoord").innerHTML = event.gamma;
