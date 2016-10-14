@@ -122,8 +122,8 @@
                 ball.style.top  = (maxX*y/40 - 10) + "px";
                 ball.style.left = (maxY*x/40 - 10) + "px";
                 
-                document.getElementById("xcoord").innerHTML = event.beta;
-                document.getElementById("ycoord").innerHTML = event.gamma;
+                document.getElementById("xcoord").innerHTML = event.beta.toFixed(1);
+                document.getElementById("ycoord").innerHTML = event.gamma.toFixed(1);
                 
                 /*
                 var power         = Math.abs(y_r - 89) * (255 / 89);
@@ -146,10 +146,10 @@
 
             <table>
                 <tr>
-                    <td class="left_align"> x-coordinate:</td>
+                    <td class="left_align"> x-acc:</td>
                     <td><span id="xcoord">0</span></td>
                     <td>&nbsp;&nbsp;&nbsp;</td>
-                    <td style="text-align:left"> y-coordinate:</td>
+                    <td style="text-align:left"> y-acc:</td>
                     <td class="right_align"><span id="ycoord">0</span></td>
                 </tr>
                 <tr>
