@@ -109,8 +109,8 @@
                 }
                 
                 
-                var y_r = Math.round(y);
-                var x_r = Math.round(x);
+                var y_r = y;
+                var x_r = x;
                 
                 // To make computation easier we shift the range of
                 // x and y to [0,180]
@@ -126,16 +126,16 @@
                 document.getElementById("ycoord").innerHTML = event.gamma.toFixed(1);
                 
                 
-                var power         = Math.round(y/40*255);
+                var power         = Math.round(-y_r/40*255);
                 document.getElementById("power").innerHTML = power;
                 
-                var steer = Math.round(x/20*255);
+                var steer = Math.round(x_r/20*255);
                 document.getElementById("steer").innerHTML = steer;
             
                 
                 //setPower(power_rounded);
                 //setSteer(steer_rounded);
-                 
+                
                 
             }
         
