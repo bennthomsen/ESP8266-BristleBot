@@ -14,6 +14,7 @@
 #include <WebSocketsServer.h>
 #include <ArduinoJson.h>
 
+
 WebSocketsServer webSocket = WebSocketsServer(81);
 uint8_t socketNumber;
 
@@ -26,7 +27,7 @@ LED irRear;
 
 #include "ProximityFunctions.h"
 #include "FS.h"
-#include "Config.h"
+//#include "Config.h"
 #include "WebServer.h"
 #include "WSS.h"
 
@@ -57,7 +58,6 @@ void setup() {
   webSocket.begin();
   webSocket.onEvent(webSocketEvent);
   Sprintln ( "Web Socket server started" );
-  //loadConfig();
 }
 
 void loop() {
@@ -66,7 +66,7 @@ void loop() {
     red.heartbeat();
     blue.heartbeat();
     ir.heartbeat();
-    drive.autonomous();
+    drive.loop();
     acquireProximity();
     sendProximity();           // Send updated Proximity reading if available
 }

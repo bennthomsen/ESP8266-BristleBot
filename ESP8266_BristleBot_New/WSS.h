@@ -2,7 +2,7 @@
 #define GET_SAMPLE 0x10
 #define GET_SAMPLE__WAITING 0x12 
 
-
+long lastSend = 0;
 
   //----------------------------------------------------------------------- 
 void sendProximity() {
@@ -11,19 +11,25 @@ void sendProximity() {
     sensors.right.done = false;
     sensors.left.limit = (sensors.left.value > sensors.left.threshold);
     sensors.right.limit = (sensors.right.value > sensors.right.threshold);
-    if (drive.auto_en()){
+
+    if (drive.fsm_en()){
       if (sensors.left.limit & sensors.right.limit) {
-            drive.turn180();
+        drive.setEvent(SENSORSLIMIT);
       }
       else if(sensors.left.limit) {
-        drive.turnRight();
+        drive.setEvent(LEFTSENSORLIMIT);
       }
       else if(sensors.right.limit) {
-        drive.turnLeft();
+        drive.setEvent(RIGHTSENSORLIMIT);
       }
+      else drive.setEvent(CLEAR);
     }
-    String toSend = "{\"left\":{\"value\":" + String(sensors.left.value) + ",\"limit\":" + String(sensors.left.limit) + "},\"right\":{\"value\":" + String(sensors.right.value) + ",\"limit\":" + String(sensors.right.limit) + "}}";
-    webSocket.sendTXT(socketNumber,toSend);
+
+    if ((millis() - lastSend >= sensors.reportRate) || sensors.left.limit || sensors.right.limit) {
+      lastSend = millis();
+      String toSend = "{\"left\":{\"value\":" + String(sensors.left.value) + ",\"limit\":" + String(sensors.left.limit) + "},\"right\":{\"value\":" + String(sensors.right.value) + ",\"limit\":" + String(sensors.right.limit) + "}}";
+      webSocket.sendTXT(socketNumber,toSend);
+    }
   }
 }
 
@@ -84,11 +90,11 @@ void sendProximity() {
               webSocket.sendTXT(num, toSend);
              }
              if(cmd=="DRI") {
-              char toSend[100];
-              drive.configJSON(toSend, sizeof(toSend));
+              char toSend[256];
+              drive.printConfig(toSend, sizeof(toSend));
               webSocket.sendTXT(num, toSend);
              }
-                     
+                               
           }
           else if (cmdtype=="SET") {
             String cmd = text.substring(4,7);
@@ -120,23 +126,18 @@ void sendProximity() {
             }
             if(cmd=="DRI") {
               String val=(text.substring(11,text.length()));
-              if (action=="LEF") {
-                drive.left.value(val.toInt());
-                drive.left.set();
-              }
-              else if (action=="RIG") {
-                drive.right.value(val.toInt());
-                drive.right.set();
-              }
+              if (action=="LEF")      drive.setLeftPower(val.toInt());
+              else if (action=="RIG") drive.setRightPower(val.toInt());
               else if (action=="LMA") drive.leftMax(val.toInt());
               else if (action=="RMA") drive.rightMax(val.toInt());
-              else if (action=="AUT") {
-                proximityEnable(val.toInt());
-                drive.autonomousEnable(val.toInt());
-              }
               else if (action=="STE") drive.steer(val.toInt());
               else if (action=="POW") drive.power(val.toInt());
               else if (action=="ENA") drive.enable(val.toInt());
+              else if (action=="FSM") drive.updateConfig((char *) &payload[12]);
+              else if (action=="STA") { 
+                proximityEnable(val.toInt());
+                drive.fsm(val.toInt());
+              }
             }
             if(cmd=="PRO") {
               String val=(text.substring(11,text.length()));

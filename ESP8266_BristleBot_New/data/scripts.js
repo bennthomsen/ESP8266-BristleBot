@@ -41,6 +41,14 @@ function stopAuto() {
     WSSend("SET:DRI:AUT0");
 }
 
+function startFSM() {
+    WSSend("SET:DRI:STA1");
+}
+
+function stopFSM() {
+    WSSend("SET:DRI:STA0");
+}
+
 function stopMotors() {
     console.log("Stopping");
     WSSend("SET:DRI:ENA0");

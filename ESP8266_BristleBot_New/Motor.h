@@ -14,7 +14,7 @@ class Motor
     int maximum();
     void fullSpeed();
     void stop();
-    void set();
+    void start();
    
   private:
     int _pin;

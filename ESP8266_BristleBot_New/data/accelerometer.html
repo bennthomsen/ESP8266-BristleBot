@@ -27,6 +27,7 @@
         </style>
         
         <!-- Script that allows connection with BristleBot -->
+        <script src="scripts.js"></script>
         <script>
             
             
@@ -37,22 +38,10 @@
             connection = new WebSocket("ws://" + host + ":81/");
         }
         
-        
-        function setPower(newValue) {
-            connection.send("p"+newValue);
-        }
-        
-        function setSteer(newValue) {
-            connection.send("s"+newValue);
-        }
-        
-        
-        
-        
         window.onload = setupWebSocket;
         
         window.onbeforeunload = connection.close();
-            </script>
+        </script>
     </head>
     <body>
         
@@ -97,18 +86,10 @@
                 var y = 0;  // In degree in the range [-180,180]
                 var x = 0; // In degree in the range [-90,90]
                 
-                if (height < width) {
-                    x = event.beta;
-                    y = event.gamma;
-                }
-                else {
+                if (width < height) {
                     y = event.beta;
                     x = event.gamma;
-                }
-                
-                // Because we don't want to have the device upside down
-                // We constrain the y value to the range [-90,90]
-                if (width < height) {
+                    
                     if (y >  89) { y =  89};
                     if (y <   0) { y =   0};
                     
@@ -116,6 +97,9 @@
                     if (x < -89) { x = -89};
                 }
                 else {
+                    x = event.beta;
+                    y = event.gamma;
+                    
                     y = y * (-1);
                     if (y >  89) { y =  89};
                     if (y <   0) { y =   0};
@@ -123,6 +107,7 @@
                     if (x >  89) { y =  89};
                     if (x < -89) { y = -89};
                 }
+                
                 
                 var y_r = Math.round(y);
                 var x_r = Math.round(x);
@@ -137,20 +122,21 @@
                 ball.style.top  = (maxX*y/180 - 10) + "px";
                 ball.style.left = (maxY*x/180 - 10) + "px";
                 
-                document.getElementById("xcoord").innerHTML = x_r;
-                document.getElementById("ycoord").innerHTML = y_r;
+                document.getElementById("xcoord").innerHTML = event.beta;
+                document.getElementById("ycoord").innerHTML = event.gamma;
                 
+                /*
                 var power         = Math.abs(y_r - 89) * (255 / 89);
                 var power_rounded = Math.round(power);
                 document.getElementById("power").innerHTML = power_rounded;
                 
-                var steer			= (x_r + 89) * (255 / 178);
-                var steer_rounded	= Math.round(steer);
-                document.getElementById("steer").innerHTML = steer_rounded;
+                var steer = Math.round(x_r* 255 / 30);
+                document.getElementById("steer").innerHTML = steer;
             
                 
                 //setPower(power_rounded);
                 //setSteer(steer_rounded);
+                 */
                 
             }
         

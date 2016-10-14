@@ -2,8 +2,8 @@
 
 
 Drive::Drive(int leftpin, int rightpin) {
-  left = Motor(leftpin);
-  right = Motor(rightpin);
+  leftMotor = Motor(leftpin);
+  rightMotor = Motor(rightpin);
   _power = 0;
   _steer = 0;
 }
@@ -13,14 +13,10 @@ void Drive::begin(char* name) {
   Drive::_loadConfig();
 }
 
-void Drive::enable() {
-  _enable = true;
-}
-
 void Drive::enable(int value) {
   if(value){
     _enable = true;
-    Drive::set();
+    Drive::update();
   }
   else {
     _enable = false;
@@ -28,140 +24,82 @@ void Drive::enable(int value) {
   } 
 }
 
+void Drive::enable() {
+  _enable = true;
+}
+
 void Drive::disable() {
   _enable = false;
 }
 
-void Drive::set() {
+void Drive::update() {
   if (_enable) {
-  left.set();
-  right.set();
+  leftMotor.start();
+  rightMotor.start();
   }
+}
+
+void Drive::setLeftPower(int val) {
+  leftMotor.value(val);
+  Drive::update();
+}
+
+void Drive::setRightPower(int val) {
+  rightMotor.value(val);
+  Drive::update();
 }
 
 void Drive::leftMax(int val) {
   _leftMax = val;
-  Drive::_saveConfig();
+  Drive::_updateConfig();
 }
 
 void Drive::rightMax(int val) {
   _rightMax = val;
-  Drive::_saveConfig();
+  Drive::_updateConfig();
 }
 
 void Drive::power(int data) {
   _power = data;
-  right.value((_power*_rightMax) >> 8);
-  left.value((_power*_leftMax) >> 8);
-  Drive::set();   
+  rightMotor.value((_power*_rightMax) >> 8);
+  leftMotor.value((_power*_leftMax) >> 8);
+  Drive::update();   
 }
 
 void Drive::steer(int data) {
   _steer = data;
   if (_steer < 0) {
-    left.value(((256+_steer)*_power*_leftMax) >> 16);  
-    right.value((_power*_rightMax) >> 8);
+    leftMotor.value(((256+_steer)*_power*_leftMax) >> 16);  
+    rightMotor.value((_power*_rightMax) >> 8);
   }
   else {
-    right.value(((256-_steer)*_power*_rightMax) >> 16);  
-    left.value((_power*_leftMax) >> 8);
+    rightMotor.value(((256-_steer)*_power*_rightMax) >> 16);  
+    leftMotor.value((_power*_leftMax) >> 8);
   }
-  Drive::set(); 
-}
-
-void Drive::forward() {
-  right.value((_power*_rightMax) >> 8);
-  left.value((_power*_leftMax) >> 8); 
-  Drive::set();
+  Drive::update(); 
 }
 
 void Drive::stop() {
-  right.stop();
-  left.stop();  
+  rightMotor.stop();
+  leftMotor.stop(); 
+  _endTime = millis()+_timeOuts[0]; 
 }
 
-void Drive::hardRight() {
-  right.stop();
-  left.fullSpeed();  
-}
-
-void Drive::hardLeft() {
-  left.stop();
-  right.fullSpeed();  
-}
-
-void Drive::autonomousEnable(int enable) {
-  Serial.print("Auto: ");
-   Serial.println(enable);
-  if (enable) {
-   Drive::enable();
-  _auto = true;
-  Drive::set();
-  }
-  else {
-  Drive::disable();
-  _auto = false;
-  Drive::stop();
-  }
-}
-
-
-void Drive::stopAutonomous() {
-   Drive::disable();
-  _auto = false;
-  Drive::stop();
-}
-
-void Drive::turnRight() {
-  Drive::hardRight();
-  _start = millis()+_delayRight;
+void Drive::forward() {
+  Drive::update();
+  _endTime = millis()+_timeOuts[1];
 }
 
 void Drive::turnLeft() {
-  Drive::hardLeft();
-  _start = millis()+_delayLeft;  
+  leftMotor.stop();
+  rightMotor.fullSpeed(); 
+  _endTime = millis()+_timeOuts[2];  
 }
 
-void Drive::turn180() {
-  _start = millis()+_delayRight; 
-  Drive::hardRight(); 
-}
-
-int Drive::delayLeft(){
-      return _delayLeft;
-}
-
-int Drive::delayRight(){
-      return _delayRight;
-}
-
-int Drive::delay180(){
-      return _delay180;
-}
-
-void Drive::delayLeft(int value){
-      _delayLeft = value;
-}
-
-void Drive::delayRight(int value){
-      _delayRight = value;
-}
-
-void Drive::delay180(int value){
-      _delay180 = value;
-}
-
-void Drive::autonomous() {
-  if (_auto) {
-    if ((millis() > _start)) {
-          Drive::forward();
-          _start = MAXTIME;
-    }
-  }         
-}
-
-bool Drive::auto_en() {
-  return _auto;
+void Drive::turnRight() {
+  rightMotor.stop();
+  leftMotor.fullSpeed(); 
+  _endTime = millis()+_timeOuts[3];
 }
 
 void Drive::_loadConfig() {
@@ -169,56 +107,138 @@ void Drive::_loadConfig() {
   if (configFile) {
     Serial.println("Loading config file: " + _filename);
     size_t size = configFile.size();
-    std::unique_ptr<char[]> buf(new char[size]);
-    configFile.readBytes(buf.get(), size);
+    //std::unique_ptr<char[]> buf(new char[size]);
+    char data[256];
+    //configFile.readBytes(buf.get(), size);
+    configFile.readBytes(data,size);
     configFile.close();
 
-    StaticJsonBuffer<SENSORDATA_JSON_SIZE> jsonBuffer;
-    JsonObject& root = jsonBuffer.parseObject(buf.get());
-  
-    if (root.success()) {
-      _leftMax = root["leftMax"];
-      _rightMax = root["rightMax"];
-      _delayLeft = root["delayLeft"];
-      _delayRight = root["delayRight"];
-      _delay180 = root["delay180"];
-    }
-  }
+    Drive::updateConfig(data);
+  } 
   else {
     Serial.println("Creating new config file: " + _filename);
-    Drive::_saveConfig();
+    Drive::_updateConfig();
   }
 }
 
-void Drive::_saveConfig() {
-  StaticJsonBuffer<SENSORDATA_JSON_SIZE> jsonBuffer;
-  JsonObject& root = jsonBuffer.createObject();
-  root["leftMax"] = _leftMax;
-  root["rightMax"] = _rightMax;
-  root["delayLeft"] = _delayLeft;
-  root["delayRight"] = _delayRight;
-  root["delay180"] = _delay180;
-
+void Drive::_saveConfig(char *data) {
   Serial.print("Writing to file: ");
   Serial.println(_filename);
-  
   File configFile = SPIFFS.open(_filename, "w");
   if (configFile) {
-    root.printTo(configFile);
+    configFile.print(data);
     configFile.close();
   }
   else Serial.println("Failed to open config file for writing");
 }
 
-void Drive::configJSON(char* outString, int size) {
-  StaticJsonBuffer<SENSORDATA_JSON_SIZE> jsonBuffer;
+void Drive::_updateConfig() {
+    char data[256];
+    Drive::printConfig(data, sizeof(data));
+    Drive::_saveConfig(data);
+}
+
+void Drive::updateConfig(char *data) {
+  Drive::_saveConfig(data);
+  StaticJsonBuffer<DRIVE_JSON_SIZE> jsonBuffer;
+  JsonObject& root = jsonBuffer.parseObject(data);
+  if (root.success()) {
+    root.printTo(Serial);
+    _leftMax = root["leftMax"];
+    _rightMax = root["rightMax"];
+    int index = 0;
+    for (int row=0; row < STATES; row++) {
+      for (int col=0; col < EVENTS; col++) {
+        index = row*EVENTS+col;
+        _transTable[row][col] = root["transitions"][index];
+        _actionTable[row][col] = root["actions"][index];
+      }
+      _timeOuts[row] = root["timeOuts"][row];
+    }
+  }
+  else Serial.println("Failed to parse FSM data");
+}
+
+void Drive::printConfig(char* outString, int size) {
+  StaticJsonBuffer<DRIVE_JSON_SIZE> jsonBuffer;
   JsonObject& root = jsonBuffer.createObject();
+  JsonArray& transitions = root.createNestedArray("transitions");
+  JsonArray& actions = root.createNestedArray("actions");
+  JsonArray& timeOuts = root.createNestedArray("timeOuts");
+
   root["leftMax"] = _leftMax;
   root["rightMax"] = _rightMax;
-  root["delayLeft"] = _delayLeft;
-  root["delayRight"] = _delayRight;
-  root["delay180"] = _delay180;
+  
+  int index = 0;
+  for (int row=0; row < STATES; row++) {
+    for (int col=0; col < EVENTS; col++) {
+       transitions.add(_transTable[row][col]);
+       actions.add(_actionTable[row][col]);
+    }
+    timeOuts.add(_timeOuts[row]);
+  }
+  root.printTo(outString,size);      
+}
 
-  root.printTo(outString,size);
+void Drive::setEvent(int event) {
+  _event = event;
+  _eventServe = true;
+}
+
+void Drive::setStart(int start) {
+  _endTime = start;
+}
+
+bool Drive::fsm_en() {
+  return _fsm;
+}
+
+void Drive::fsm(int enable) {
+  if (enable) {
+    Serial.println("Starting Program");
+    _fsm = true;
+    _event = 0;
+    _currentstate = 0;
+    _eventServe = true;
+    _endTime = MAXTIME;
+    _enable = true;
+  }
+  else {
+    _fsm = false;
+    Serial.println("Stopping Program");
+  }
+}
+
+void Drive::loop() {
+  if (_fsm){
+    if (millis() >= _endTime) Drive::setEvent(TIMEOUT);
+      
+    if (_eventServe) {
+      // Call transition event action
+      switch (_actionTable[_currentstate][_event]) {
+        case STOP:
+          Drive::stop();
+          Serial.println("FSM: Stop");
+        break;
+        case FORW:
+          Drive::forward();
+          Serial.println("FSM: FORWARD");
+        break;
+        case TL90:
+          Drive::turnLeft();
+          Serial.println("FSM: TURNLEFT");
+        break;
+        case TR90:
+          Drive::turnRight();
+          Serial.println("FSM: TURNRIGHT");
+        break;
+      }
+  
+      _eventServe = false;
+      
+     // Update state
+     _currentstate=_transTable[_currentstate][_event];
+    }
+  } 
 }
   

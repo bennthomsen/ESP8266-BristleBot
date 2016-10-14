@@ -39,7 +39,7 @@ void Motor::stop()
   analogWrite(_pin,0);
 }
 
-void Motor::set()
+void Motor::start()
 {
   analogWrite(_pin,_value);
 }
