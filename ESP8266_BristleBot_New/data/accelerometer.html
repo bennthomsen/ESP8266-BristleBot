@@ -45,6 +45,20 @@
             var host = "192.168.4.1";
             console.log("Host: " + host);
             connection = new WebSocket("ws://" + host + ":81/");
+            
+            connection.onopen = function(evt) {
+                console.log("CONNECTED");
+                document.getElementById("outputTextStatus").innerHTML = "CONNECTED";
+            };
+            
+            connection.onclose = function(evt) {
+                console.log("DISCONNECTED");
+                document.getElementById("outputTextStatus").innerHTML = "DISCONNECTED";
+            };
+            
+            connection.onerror = function(evt) {
+                console.log("ERROR: " + evt.data);
+            };
         }
         
         window.onload = setupWebSocket;
@@ -73,7 +87,7 @@
             
             var width_g		= garden.clientWidth;
             var height_g 	= garden.clientHeight;
-            
+            var max_range = 20;
             
             function handleOrientation(event) {
                 var y = 0;  // In degree in the range [-180,180]
@@ -83,38 +97,33 @@
                     y = event.beta;
                     x = event.gamma;
                     
-                    if (y >  40) { y =  40};
+                    if (y >  max_range) { y =  max_range};
                     if (y <   0) { y =   0};
                     
-                    if (x >  20) { x =  20};
-                    if (x < -20) { x = -20};
+                    if (x >  max_range) { x =  max_range};
+                    if (x < -max_range) { x = -max_range};
                 }
                 else {
                     x = event.beta;
                     y = event.gamma;
                     
                     y = y * (-1);
-                    if (y >  89) { y =  89};
+                    if (y >  max_range) { y =  2max_range};
                     if (y <   0) { y =   0};
                     
-                    if (x >  89) { y =  89};
-                    if (x < -89) { y = -89};
+                    if (x >  max_range) { y =  max_range};
+                    if (x < -max_range) { y = -max_range};
                 }
                 
                 
-                var yn = 1-y/40;
-                var xn = x/20;
+                var yn = 1-y/max_range;
+                var xn = x/max_range;
                 
-                var r = Math.sqrt(xn*xn + yn*yn);
-                var theta = Math.atan2(xn,yn);
+                var r = yn;
+                var theta = 0.5*Math.PI*xn;
                 
-                var xb = xn;
-                var yb = yn;
-                
-                if (r > 1) {
-                    xb = Math.sin(theta);
-                    yb = Math.cos(theta);
-                }
+                var   xb = r * Math.sin(theta);
+                var  yb = r *Math.cos(theta);
 
                 ball.style.top  = (140-150*yb) + "px";
                 ball.style.left = (140+150*xb) + "px";
@@ -123,10 +132,10 @@
                 document.getElementById("ycoord").innerHTML = event.gamma.toFixed(1);
                 
                 
-                var power = Math.round(r*255);
+                var power = Math.round(yn*255);
                 document.getElementById("power").innerHTML = power.toFixed(2);
                 
-                var steer = Math.round(2*theta/Math.PI*255);
+                var steer = Math.round(xn*255);
                 document.getElementById("steer").innerHTML = steer.toFixed(2);
             
                 
@@ -157,7 +166,14 @@
                 </tr>
                 </table>
             <hr color="grey" width="90%" size="1px">
-            Annabel is cool. Hello Bob
+            <table>
+                <tr>
+                    <td><button class="pushbutton" onclick="startMotors()"><span>Start</span></td>
+                    <td></td>
+                    <td><button class="pushbutton" onclick="stopMotors()"><span>Stop</span></td>
+                </tr>
+            </table>
+            <hr color="grey" width="90%" size="1px">
             <img src="logo.png" alt="UCL logo" style="width:197px; height:52px;">
         </center>
         </div>
