@@ -89,6 +89,12 @@
             var height_g 	= garden.clientHeight;
             var max_range = 20;
             
+            var power = 0;
+            var steer = 0;
+            var old_power = 0;
+            var old_steer = 0;
+            var update_threshold = 5;
+            
             function handleOrientation(event) {
                 var y = 0;  // In degree in the range [-180,180]
                 var x = 0; // In degree in the range [-90,90]
@@ -119,11 +125,10 @@
                 var yn = 1-y/max_range;
                 var xn = x/max_range;
                 
-                var r = yn;
                 var theta = 0.5*Math.PI*xn;
                 
-                var   xb = r * Math.sin(theta);
-                var  yb = r *Math.cos(theta);
+                var   xb = yn * Math.sin(theta);
+                var  yb = yn *Math.cos(theta);
 
                 ball.style.top  = (140-150*yb) + "px";
                 ball.style.left = (140+150*xb) + "px";
@@ -137,12 +142,16 @@
                 
                 var steer = Math.round(xn*255);
                 document.getElementById("steer").innerHTML = steer.toFixed(2);
-            
                 
-                updatePower(r*255);
-                updateSteer(2*theta/Math.PI*255);
-                
-                
+                if (Math.abs(old_power-power) > update_threshold) {
+                    old_power = power;
+                    updatePower(power);
+                }
+                if (Math.abs(old_steer-steer) > update_threshold) {
+                    old_steer = steer;
+                    updatePower(steer);
+                }
+  
             }
         
         window.addEventListener('deviceorientation', handleOrientation);
