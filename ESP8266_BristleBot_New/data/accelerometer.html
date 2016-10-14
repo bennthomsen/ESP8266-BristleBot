@@ -125,12 +125,11 @@
                 document.getElementById("xcoord").innerHTML = event.beta.toFixed(1);
                 document.getElementById("ycoord").innerHTML = event.gamma.toFixed(1);
                 
-                /*
-                var power         = Math.abs(y_r - 89) * (255 / 89);
-                var power_rounded = Math.round(power);
-                document.getElementById("power").innerHTML = power_rounded;
                 
-                var steer = Math.round(x_r* 255 / 30);
+                var power         = Math.round(y/40*255);
+                document.getElementById("power").innerHTML = power;
+                
+                var steer = Math.round(x/20*255);
                 document.getElementById("steer").innerHTML = steer;
             
                 
