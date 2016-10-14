@@ -109,7 +109,7 @@
                 }
                 
                 
-                var yn = y/40;
+                var yn = 1-y/40;
                 var xn = x/20;
                 
                 var r = Math.sqrt(xn*xn + yn*yn);
@@ -130,10 +130,10 @@
                 
                 
                 //var power         = Math.round(-y_r/40*255)+255;
-                document.getElementById("power").innerHTML = xn.toFixed(2);
+                document.getElementById("power").innerHTML = r.toFixed(2);
                 
                 //var steer = Math.round(x_r/20*255);
-                document.getElementById("steer").innerHTML = yn.toFixed(2);
+                document.getElementById("steer").innerHTML = theta.toFixed(2);
             
                 
                 //setPower(power_rounded);
