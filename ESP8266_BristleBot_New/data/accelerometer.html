@@ -74,9 +74,6 @@
             var width_g		= garden.clientWidth;
             var height_g 	= garden.clientHeight;
             
-            var maxX = garden.clientWidth  - ball.clientWidth;
-            var maxY = garden.clientHeight - ball.clientHeight;
-            
             
             function handleOrientation(event) {
                 var y = 0;  // In degree in the range [-180,180]
@@ -119,8 +116,8 @@
                     yb = Math.cos(theta);
                 }
 
-                ball.style.top  = (140-maxX*yb) + "px";
-                ball.style.left = (140+maxY*xb) + "px";
+                ball.style.top  = (140-150*yb) + "px";
+                ball.style.left = (140+150*xb) + "px";
                 
                 document.getElementById("xcoord").innerHTML = event.beta.toFixed(1);
                 document.getElementById("ycoord").innerHTML = event.gamma.toFixed(1);
