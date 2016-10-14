@@ -109,13 +109,16 @@
                 }
                 
                 
-                var y_r = y;
-                var x_r = x;
+                var yn = y/40;
+                var xn = x/20;
                 
+                var r = Math.sqrt(xn*xn + yn*yn);
+                var theta = Math.atan2(xn,yn);
                 // To make computation easier we shift the range of
                 // x and y to [0,180]
             
                 x += 20;
+            
                 
                 // 10 is half the size of the ball
                 // It center the positioning point to the center of the ball
@@ -127,10 +130,10 @@
                 
                 
                 var power         = Math.round(-y_r/40*255)+255;
-                document.getElementById("power").innerHTML = power;
+                document.getElementById("power").innerHTML = r;
                 
                 var steer = Math.round(x_r/20*255);
-                document.getElementById("steer").innerHTML = steer;
+                document.getElementById("steer").innerHTML = theta;
             
                 
                 //setPower(power_rounded);
