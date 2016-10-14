@@ -117,8 +117,8 @@
                     if (y >  max_range) { y =  max_range};
                     if (y <   0) { y =   0};
                     
-                    if (x >  max_range) { y =  max_range};
-                    if (x < -max_range) { y = -max_range};
+                    if (x >  max_range) { x =  max_range};
+                    if (x < -max_range) { x = -max_range};
                 }
                 
                 
@@ -128,7 +128,7 @@
                 var theta = 0.5*Math.PI*xn;
                 
                 var   xb = yn * Math.sin(theta);
-                var  yb = yn *Math.cos(theta);
+                var  yb = yn * Math.cos(theta);
 
                 ball.style.top  = (140-150*yb) + "px";
                 ball.style.left = (140+150*xb) + "px";
