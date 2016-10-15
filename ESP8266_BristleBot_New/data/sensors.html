@@ -70,13 +70,13 @@
             if (!enable) {
                 enable = true;
                 el.style.backgroundColor = "green";
-                label.innerHTML = "  Stop  ";
+                label.innerHTML = "&nbsp;&nbsp;Stop&nbsp;&nbsp;&nbsp;";
             	WSSend("SET:PRO:ENA1");
             }
             else {
                 enable = false;
                 el.style.backgroundColor = "#555555";
-                label.innerHTML = " Start ";
+                label.innerHTML = "&nbsp;&nbsp;Start&nbsp;&nbsp;";
                 WSSend("SET:PRO:ENA0");
             }
             
@@ -133,7 +133,7 @@
             <table border="0">
                 <tr>
                     <td colspan="3"  class="left_align"><b>Proximity Sensor Readings </b></td>
-                    <td><button class="pushbutton" id="proxEnableSwitch" onclick="proxEnable()"><span id="proxEnableLabel">Start</span></td>
+                    <td><button class="pushbutton" id="proxEnableSwitch" onclick="proxEnable()"><span id="proxEnableLabel">&nbsp;&nbsp;Start&nbsp;&nbsp;</span></td>
                 </tr>
                 <tr>
                     <th></th>

@@ -4,8 +4,10 @@
         <link rel="stylesheet" type="text/css" href="indexstyle.css">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>BristleBot - Drive</title>
-        <script src="scripts.js"></script>
         <script>
+            var motorEnable = false;
+            var enable = false;
+            
             function setupWebSocket() {
                 //var host = window.location.hostname;
                 var host = "192.168.4.1"
@@ -43,6 +45,60 @@
                 };
             }
         
+        function motorOnOff() {
+            var el = document.getElementById("motorSwitch");
+            var label = document.getElementById("motorLabel");
+            if (!motorEnable) {
+                motorEnable = true;
+                el.style.backgroundColor = "green";
+                label.innerHTML = "&nbsp;&nbsp;Stop Motors&nbsp;&nbsp;&nbsp;";
+                WSSend("SET:DRI:ENA1");
+            }
+            else {
+                motorEnable = false;
+                el.style.backgroundColor = "#555555";
+                label.innerHTML = "&nbsp;&nbsp;Start Motors&nbsp;&nbsp;";
+                WSSend("SET:DRI:ENA0");
+            }
+            
+        }
+        
+        function center(newValue)
+        {
+            document.getElementById("inputSliderSteer").value = 0;
+            WSSend("SET:DRI:STE0");
+        }
+        
+        function proxEnable() {
+            var el = document.getElementById("proxEnableSwitch");
+            var label = document.getElementById("proxEnableLabel");
+            if (!enable) {
+                enable = true;
+                el.style.backgroundColor = "green";
+                label.innerHTML = "&nbsp;&nbsp;Stop Sensor&nbsp;&nbsp;&nbsp;";
+                WSSend("SET:PRO:ENA1");
+            }
+            else {
+                enable = false;
+                el.style.backgroundColor = "#555555";
+                label.innerHTML = "&nbsp;&nbsp;Start Sensor&nbsp;&nbsp;";
+                WSSend("SET:PRO:ENA0");
+            }
+            
+        }
+        
+        function WSSend(data){
+            try {
+                console.log("Sending: " + data);
+                connection.send(data);
+            }
+            catch(err) {
+                console.log("ERROR: " + err.message);
+                console.log("Trying to reestablish connection");
+                setupWebSocket();
+            }
+        }
+        
         function closeSocket()
         {
             console.log("Closing Socket");
@@ -62,15 +118,14 @@
         <div class="status">Connection status: <span id="outputTextStatus">UNCONNECTED</span></div>
         <hr color="grey" width="90%" size="1px">
         <center>
-            <table  border="0px">
+            <table  border="0">
                 <tr>
-                    <th class="left_align">Power</th>
+                    <th colspan="2" class="left_align">Power</th>
                 </tr>
                 <tr>
                     <td style="width:15%" class="left_align" rowspan="5"><input type="range" id= "inputSliderPower" class="vertical" orient="vertical" min="0" max="256" value="0" step="1" oninput="updatePower(this.value)"/></td>
                     <td class="left_align">Max</td>
-                    <td></td>
-                    <th class="left_align" colspan="2">Proximity</th>
+                    <th class="left_align" colspan="3">Proximity Sensor</th>
                 </tr>
                 <tr>
                     <td></td>
@@ -86,9 +141,7 @@
                 </tr>
                 <tr>
                     <td></td>
-                    <td class="right_align">Sensor:</td>
-                    <td><button class="pushbutton" onclick="proxEnableFn()"><span>Start</span></td>
-                    <td><button class="pushbutton" onclick="proxDisableFn()"><span>Stop</span></td>
+                    <td colspan="3"><button class="pushbutton" id="proxEnableSwitch" onclick="proxEnable()"><span id="proxEnableLabel">&nbsp;&nbsp;Start Sensor&nbsp;&nbsp;</span></td>
                     </tr>
                 <tr>
                     <td class="left_align">Min</td>
@@ -106,9 +159,9 @@
             <hr color="grey" width="90%" size="1px">
             <table>
                 <tr>
-                    <td><button class="pushbutton" onclick="startMotors()"><span>Start</span></td>
-                    <td><button class="pushbutton" onclick="center()"><span>Center</span></td>
-                    <td><button class="pushbutton" onclick="stopMotors()"><span>Stop</span></td>
+                    <td></td>
+                    <td><button class="pushbutton" onclick="center()"><span>Center Steering</span></td>
+                    <td colspan="3"><button class="pushbutton" id="motorSwitch" onclick="motorOnOff()"><span id="motorLabel">&nbsp;&nbsp;Start Motors&nbsp;&nbsp;</span></td>
                 </tr>
             </table>
             <hr color="grey" width="90%" size="1px">
