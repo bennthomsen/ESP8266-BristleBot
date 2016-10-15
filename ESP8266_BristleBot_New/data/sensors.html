@@ -5,6 +5,8 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <script src="scripts.js"></script>
         <script>
+            var enable = false;
+            
             function setupWebSocket() {
                 //var host = window.location.hostname;
                 var host = "192.168.4.1"
@@ -13,6 +15,7 @@
                 connection.onopen = function(evt) {
                     console.log("CONNECTED");
                     document.getElementById("outputTextStatus").innerHTML = "CONNECTED";
+                    WSSend("GET:PRO");
                 };
                 connection.onclose = function(evt) {
                     console.log("DISCONNECTED");
@@ -29,7 +32,18 @@
                         if (Number(obj.right.limit) == 1) document.getElementById("rightLimit").className = "indicator_off";
                         else document.getElementById("rightLimit").className = "indicator_on";
                     }
-                    catch(err) {console.log("ERROR: " + err.message)}
+                    catch(err) {}
+                    
+                    try {
+                        if (obj.threshold.right) document.getElementById("rightThreshold").value = obj.threshold.right;
+                        if (obj.threshold.left) document.getElementById("leftThreshold").value = obj.threshold.left;
+                        if (obj.refresh) document.getElementById("refreshRate").value = obj.refresh;
+                        if (obj.rate) document.getElementById("sampleRate").value = obj.rate;
+                        if (obj.enable) document.getElementById("proxEnableSwitch").style.backgroundColor = "green";
+                        else document.getElementById("proxEnableSwitch").style.backgroundColor = "#555555";
+                        
+                    }
+                    catch(err) {}
                
                     
                     try {
@@ -41,6 +55,32 @@
                     console.log("ERROR: " + evt.data);
                 };
             }
+        function updateProxThres() {
+            var proxObject = {"threshold":{"left":120,"right":120},"refresh":1000,"rate":500};
+            proxObject.threshold.left = Number(document.getElementById("leftThreshold").value);
+            proxObject.threshold.right = Number(document.getElementById("rightThreshold").value);
+            proxObject.refresh = Number(document.getElementById("refreshRate").value);
+            proxObject.rate = Number(document.getElementById("sampleRate").value);
+            WSSend("SET:PRO:PRO:" + JSON.stringify(proxObject));
+        }
+        
+        function proxEnable() {
+            var el = document.getElementById("proxEnableSwitch");
+            var label = document.getElementById("proxEnableLabel");
+            if (!enable) {
+                enable = true;
+                el.style.backgroundColor = "green";
+                label.innerHTML = "  Stop  ";
+            	WSSend("SET:PRO:ENA1");
+            }
+            else {
+                enable = false;
+                el.style.backgroundColor = "#555555";
+                label.innerHTML = " Start ";
+                WSSend("SET:PRO:ENA0");
+            }
+            
+        }
         
         function closeSocket()
         {
@@ -48,6 +88,8 @@
             connection.close();
             return null;
         }
+        
+        
         
         window.onload = setupWebSocket;
         
@@ -78,26 +120,39 @@
             <hr color="grey" width="90%" size="1px">
             <table border="0">
                 <tr>
-                    <td colspan="3"  class="left_align"><b>Proximity Sensor Readings </b></td>
+                    <td colspan="3"  class="left_align"><b>Proximity Sensor Settings </b></td>
+                    <td><button class="pushbutton" onclick="updateProxThres()"><span>Update</span></td>
                 </tr>
                 <tr>
-                    <td></td>
-                    <td><button class="pushbutton" onclick="proxEnableFn()"><span>Continuous</span></td>
-                    <td><button class="pushbutton" onclick="proxDisableFn()"><span>Stop Sensor</span></td>
+                    <td>Refresh rate (ms)</td>
+                    <td><input type="number" id= "refreshRate" max="10000" min="500" step="1"/></td>
+                    
+                    <td>Sample rate (ms)</td>
+                    <td><input type="number" id= "sampleRate" max="10000" min="200" step="1"/></td>
+                </tr>
+            </table>
+            <hr color="grey" width="90%" size="1px">
+            <table border="0">
+                <tr>
+                    <td colspan="3"  class="left_align"><b>Proximity Sensor Readings </b></td>
+                    <td><button class="pushbutton" id="proxEnableSwitch" onclick="proxEnable()"><span id="proxEnableLabel">Start</span></td>
                 </tr>
                 <tr>
                     <th></th>
                     <th>Reading</th>
+                    <th>Threshold</th>
                     <th>Limit</th>
                 </tr>
                 <tr>
                     <th class="left_align">Left</th>
                     <td><span id="leftProx">0.0</span></td>
+                    <td><input type="number" id= "leftThreshold" max="263" min="0" step="1"/></td>
                     <td><span class="indicator_on" id="leftLimit"></span></td>
                 </tr>
                 <tr>
                     <th class="left_align">Right</th>
                     <td><span id="rightProx">0.0</span></td>
+                    <td><input type="number" id= "rightThreshold" max="263" min="0" step="1"/></td>
                     <td><span class="indicator_on" id="rightLimit"></span></td>
                 </tr>
             </table>

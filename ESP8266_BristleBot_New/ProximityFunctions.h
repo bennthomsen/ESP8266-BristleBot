@@ -3,7 +3,7 @@
 
 #include <ArduinoJson.h>
 
-#define SENSORCONFIG_JSON_SIZE (JSON_OBJECT_SIZE(7))
+#define SENSORCONFIG_JSON_SIZE (JSON_OBJECT_SIZE(8))
 
 unsigned long lastSense;
 
@@ -19,7 +19,7 @@ struct Proximity {
   volatile bool enable;
   bool front;
   long rate;            // sensor sampling rate
-  long reportRate;          // rate at which the sensor streams data
+  long refreshRate;          // rate at which the sensor streams data
   int cycles;
   int level;
   struct IRSensor left;
@@ -108,7 +108,9 @@ void proxConfigJSON(char* outString, int size) {
   StaticJsonBuffer<SENSORCONFIG_JSON_SIZE> jsonBuffer;
   JsonObject& root = jsonBuffer.createObject();
   JsonObject& thresh = root.createNestedObject("threshold");
+  root["enable"] = sensors.enable;
   root["rate"] = sensors.rate;
+  root["refresh"] = sensors.refreshRate;
   root["cycles"] = sensors.cycles;
   thresh["left"] = sensors.left.threshold;
   thresh["right"] = sensors.right.threshold;
@@ -122,10 +124,11 @@ void proxUpdateConfig(char *data) {
   JsonObject& root = jsonBuffer.parseObject(data);
   
   if (root.success()) {
-    sensors.rate = root["rate"];
-    sensors.cycles = root["cycles"];
-    sensors.left.threshold = root["threshold"]["left"];
-    sensors.right.threshold = root["threshold"]["right"];
+    if(root["rate"]) sensors.rate = root["rate"];
+    if(root["refresh"]) sensors.refreshRate = root["refresh"];
+    if(root["cycles"]) sensors.cycles = root["cycles"];
+    if(root["threshold"]["left"]) sensors.left.threshold = root["threshold"]["left"];
+    if(root["threshold"]["right"]) sensors.right.threshold = root["threshold"]["right"];
   }
     else Serial.println("Failed to parse JSON"); 
 }

@@ -4,7 +4,6 @@
         <link rel="stylesheet" type="text/css" href="indexstyle.css">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <title>BristleBot - Actuators</title>
-                <script src="scripts.js"></script>
                 <script>
                     function setupWebSocket() {
                         //var host = window.location.hostname;
@@ -42,6 +41,67 @@
                             console.log("ERROR: " + evt.data);
                         };
                     }
+                var Cmd = ["RED", "BLU", "IRF", "IRR"];
+                var Action = ["BLI", "ENA", "DIS"];
+                
+                function LEDBlink() {
+                    var e = document.getElementById("led");
+                    WSSend("SET:" + Cmd[e.selectedIndex] +":BLI");
+                }
+                
+                function LEDOn() {
+                    var e = document.getElementById("led");
+                    WSSend("SET:" + Cmd[e.selectedIndex] +":ENA");
+                }
+                
+                function LEDOff() {
+                    var e = document.getElementById("led");
+                    WSSend("SET:" + Cmd[e.selectedIndex] +":DIS");
+                }
+                
+                function updateMotorPowerCal() {
+                    var left = document.getElementById("inputSliderLeft").value;
+                    var right = document.getElementById("inputSliderRight").value;
+                    console.log("Setting Motor Maximum Power to (L,R): " + left + ", " + right);
+                    WSSend("SET:DRI:LMA" + left);
+                    WSSend("SET:DRI:RMA" + right);
+                }
+                
+                function setLeftMotor(newValue)
+                {
+                    console.log("Setting Left Motor Power to: " +newValue);
+                    document.getElementById("outputTextLeft").innerHTML = newValue;
+                    WSSend("SET:DRI:LEF"+newValue);
+                }
+                
+                function setRightMotor(newValue)
+                {
+                    console.log("Setting Right Motor Power to: " +newValue);
+                    document.getElementById("outputTextRight").innerHTML = newValue;
+                    WSSend("SET:DRI:RIG"+newValue);
+                }
+                
+                function stopMotors() {
+                    console.log("Stopping");
+                    WSSend("SET:DRI:ENA0");
+                }
+                
+                function startMotors() {
+                    console.log("Starting Motors");
+                    WSSend("SET:DRI:ENA1");
+                }
+                
+                function WSSend(data){
+                    try {
+                        console.log("Sending: " + data);
+                        connection.send(data);
+                    }
+                    catch(err) {
+                        console.log("ERROR: " + err.message);
+                        console.log("Trying to reestablish connection");
+                        setupWebSocket();
+                    }
+                }
                 
                 function closeSocket()
                 {
@@ -62,7 +122,9 @@
         <hr color="grey" width="90%" size="1px">
             <center>
                 <table border="0">
-
+                    <tr>
+                        <th class="left_align">LED</th>
+                    </tr>
                     <tr>
                         <td class="left_align">
                             <select name="LED" id= "led">
@@ -80,18 +142,14 @@
                 <hr color="grey" width="90%" size="1px">
                 <table border="0">
                     <tr>
-                        <td class="left_align" colspan="2"><b>Motors</b></td>
-                        <td style="text-align:right"><button class="pushbutton" onclick="startMotors()"><span>Start Motors</span></td>
-                        <td style="text-align:right"><button class="pushbutton" onclick="stopMotors()"><span>Stop Motors</span></td>
+                        <th colspan="3" class="left_align">Vibration Motors</th>
                     </tr>
-                </table>
-                <table border="0">
                     <tr>
-                        <td style="width:20%" rowspan="5"><input type="range" id= "inputSliderSteer" min="0" max="255" value="0" step="1" oninput="setLeftMotor(this.value)" class="vertical" orient="vertical"/></td>
+                        <td style="width:20%" rowspan="4"><input type="range" id= "inputSliderLeft" min="0" max="255" value="0" step="1" oninput="setLeftMotor(this.value)" class="vertical" orient="vertical"/></td>
                         <td style="width:15%"></td>
                         <td style="width:15%"><b>Left:</b></td>
                         <td style="width:15%"><b>Right:</b></td>
-                        <td style="width:20%" rowspan="5"><input type="range" id= "inputSliderPower" min="0" max="255" value="0" step="1" oninput="setRightMotor(this.value)" class="vertical" orient="vertical"/></td>
+                        <td style="width:20%" rowspan="4"><input type="range" id= "inputSliderRight" min="0" max="255" value="0" step="1" oninput="setRightMotor(this.value)" class="vertical" orient="vertical"/></td>
                     </tr>
                     <tr>
                         <td style="width:15%"><b>Power:</b></td>
@@ -99,22 +157,26 @@
                         <td style="width:15%"><span id="outputTextRight">0</span></td>
                     </tr>
                     <tr>
-                        <td style="width:15%"><b>Proximity:</b></td>
-                        <td style="width:15%"><span id="leftProx">0</span></td>
-                        <td style="width:15%"><span id="rightProx">0</span></td>
+                        <td colspan="3"></td>
                     </tr>
                     <tr>
-                        <td style="width:15%">Limits:</td>
-                        <td style="width:15%"><span class="indicator_on" id="leftLimit"></span></td>
-                        <td style="width:15%"><span class="indicator_on" id="rightLimit"></span></td>
+                        <td colspan="3"><button class="pushbutton" onclick="updateMotorPowerCal()"><span>Save Power levels for straight travel</span></td>
                     </tr>
                     <tr>
-                        <td class="right_align">Sensor:</td>
-                        <td><button class="pushbutton" onclick="proxEnableFn()"><span>Start</span></td>
-                        <td><button class="pushbutton" onclick="proxDisableFn()"><span>Stop</span></td>
+                        <td>Left Power</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td>Right Power</td>
                     </tr>
                     
                 </table>
+            <table border="0">
+                <tr>
+                    <td class="left_align"><button class="pushbutton" onclick="startMotors()"><span>Start Motors</span></td>
+                    <td class="right_align"><button class="pushbutton" onclick="stopMotors()"><span>Stop Motors</span></td>
+                </tr>
+            </table>
             <hr color="grey" width="90%" size="1px">
             <img src="logo.png" alt="UCL logo" style="width:197px; height:52px;">
             </center>

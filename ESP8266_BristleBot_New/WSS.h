@@ -25,7 +25,7 @@ void sendProximity() {
       else drive.setEvent(CLEAR);
     }
 
-    if ((millis() - lastSend >= sensors.reportRate) || sensors.left.limit || sensors.right.limit) {
+    if ((millis() - lastSend >= sensors.refreshRate) || sensors.left.limit || sensors.right.limit) {
       lastSend = millis();
       String toSend = "{\"left\":{\"value\":" + String(sensors.left.value) + ",\"limit\":" + String(sensors.left.limit) + "},\"right\":{\"value\":" + String(sensors.right.value) + ",\"limit\":" + String(sensors.right.limit) + "}}";
       webSocket.sendTXT(socketNumber,toSend);
