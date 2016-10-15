@@ -5,6 +5,8 @@
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <title>BristleBot - Actuators</title>
                 <script>
+                    var motorEnable = false;
+                    
                     function setupWebSocket() {
                         //var host = window.location.hostname;
                         var host = "192.168.4.1"
@@ -81,15 +83,25 @@
                     WSSend("SET:DRI:RIG"+newValue);
                 }
                 
-                function stopMotors() {
-                    console.log("Stopping");
-                    WSSend("SET:DRI:ENA0");
-                }
                 
-                function startMotors() {
-                    console.log("Starting Motors");
-                    WSSend("SET:DRI:ENA1");
+                function motorOnOff() {
+                    var el = document.getElementById("motorSwitch");
+                    var label = document.getElementById("motorLabel");
+                    if (!motorEnable) {
+                        motorEnable = true;
+                        el.style.backgroundColor = "green";
+                        label.innerHTML = "Stop Motors";
+                        WSSend("SET:DRI:ENA1");
+                    }
+                    else {
+                        motorEnable = false;
+                        el.style.backgroundColor = "#555555";
+                        label.innerHTML = "Start Motors";
+                        WSSend("SET:DRI:ENA0");
+                    }
+                    
                 }
+
                 
                 function WSSend(data){
                     try {
@@ -169,13 +181,15 @@
                         <td></td>
                         <td>Right Power</td>
                     </tr>
+                    <tr>
+                        <td></td>
+                        <td colspan="3"><button class="pushbutton" id="motorSwitch" onclick="motorOnOff()"><span id="motorLabel">Start Motors</span></td>
+                        <td></td>
+                    </tr>
                     
                 </table>
             <table border="0">
-                <tr>
-                    <td class="left_align"><button class="pushbutton" onclick="startMotors()"><span>Start Motors</span></td>
-                    <td class="right_align"><button class="pushbutton" onclick="stopMotors()"><span>Stop Motors</span></td>
-                </tr>
+                
             </table>
             <hr color="grey" width="90%" size="1px">
             <img src="logo.png" alt="UCL logo" style="width:197px; height:52px;">
