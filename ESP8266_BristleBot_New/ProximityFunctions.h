@@ -92,13 +92,13 @@ void acquireProximity() {
         ir.off();
         irRear.off();
         sensorInterrupts();
-        ir.mod38k(sensors.cycles);
+        ir.mod38k(sensors.cycles,sensors.level);
       }
       else {
         ir.off();
         irRear.off();
         sensorInterrupts();
-        irRear.mod38k(sensors.cycles);
+        irRear.mod38k(sensors.cycles,sensors.level);
       }
     }
   }
@@ -112,6 +112,7 @@ void proxConfigJSON(char* outString, int size) {
   root["rate"] = sensors.rate;
   root["refresh"] = sensors.refreshRate;
   root["cycles"] = sensors.cycles;
+  root["level"] = sensors.level;
   thresh["left"] = sensors.left.threshold;
   thresh["right"] = sensors.right.threshold;
 
@@ -127,6 +128,7 @@ void proxUpdateConfig(char *data) {
     if(root["rate"]) sensors.rate = root["rate"];
     if(root["refresh"]) sensors.refreshRate = root["refresh"];
     if(root["cycles"]) sensors.cycles = root["cycles"];
+    if(root["level"]) sensors.level = root["level"];
     if(root["threshold"]["left"]) sensors.left.threshold = root["threshold"]["left"];
     if(root["threshold"]["right"]) sensors.right.threshold = root["threshold"]["right"];
   }

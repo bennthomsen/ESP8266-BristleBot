@@ -39,6 +39,8 @@
                         if (obj.threshold.left) document.getElementById("leftThreshold").value = obj.threshold.left;
                         if (obj.refresh) document.getElementById("refreshRate").value = obj.refresh;
                         if (obj.rate) document.getElementById("sampleRate").value = obj.rate;
+                        if (obj.rate) document.getElementById("cycles").value = obj.cycles;
+                        if (obj.rate) document.getElementById("level").value = obj.level;
                         if (obj.enable) document.getElementById("proxEnableSwitch").style.backgroundColor = "green";
                         else document.getElementById("proxEnableSwitch").style.backgroundColor = "#555555";
                         
@@ -135,7 +137,7 @@
                     <td class="right_align">IR LED cycles&nbsp;<input type="number" id= "cycles" max="10000" min="5000" step="1"/></td>
                 </tr>
                 <tr>
-                    <td class="right_align">IR LED brightness (1-12)&nbsp;<input type="number" id= "level" max="12" min="1" step="1"/></td>
+                    <td class="right_align">IR LED brightness (1-12)&nbsp;<input type="number" id= "level" max="10000" min="1" step="1"/></td>
                 </tr>
             </table>
             <table border="0">

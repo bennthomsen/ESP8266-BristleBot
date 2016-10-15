@@ -22,10 +22,9 @@ class LED
     void setOffTime(int offTime);
     void setDuty(float duty);
     void setPeriod(int period);
-    void setLevel(int level);
     void state(int value);
     int state();
-    void mod38k(int cycles);
+    void mod38k(int cycles,int level);
     void updateConfig(char *data);
     void configJSON(char* outString, int size);
      
@@ -37,7 +36,6 @@ class LED
     int _offTime = 950;
     int _rate = _onTime;
     float _duty = 0.1;
-    int _level = 1;
     unsigned long _previous = 0;
     bool _led;
     int _state = 0;

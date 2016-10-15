@@ -8,6 +8,11 @@ body {
     margin-top: 2%;
 }
 
+p.justified {
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
 tr.border_top td{
     border-top: 1pt solid grey;
 }
@@ -54,6 +59,14 @@ input {
     color: #333333;
     font-family: Century Gothic, sans-serif;
     text-align: center;
+    padding-top: 5px;
+}
+
+.heading1 {
+    font-size: 14px;
+    color: #333333;
+    font-family: Century Gothic, sans-serif;
+    text-align: left;
     padding-top: 5px;
 }
 

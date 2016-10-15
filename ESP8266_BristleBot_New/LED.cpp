@@ -74,10 +74,6 @@ void LED::_onOffTime() {
   _offTime = _period - _onTime;
 }
 
-void LED::setLevel(int level) {
-  _level = level;
-}
-
 void LED::blinkOn() {
   _state = 2;
   LED::_saveConfig();
@@ -89,12 +85,12 @@ void LED::blinkOff() {
   LED::_saveConfig();
 }
 
-void LED::mod38k(int cycles) {
+void LED::mod38k(int cycles, int level) {
     for (int i=0; i <= cycles; i++){
       digitalWrite(_pin, _active);
-      delayMicroseconds(_level);
+      delayMicroseconds(level);
       digitalWrite(_pin, !(_active));
-      delayMicroseconds(24-_level);
+      delayMicroseconds(24-level);
     }
 }
 
@@ -124,7 +120,6 @@ void LED::updateConfig(char *data) {
   
     _period = root["period"];
     _duty = root["duty"];
-    _level = root["level"];
     LED::_onOffTime();
     LED::_saveConfig(); 
   }
@@ -137,7 +132,6 @@ void LED::_saveConfig() {
   root["state"] = _state;
   root["period"] = _period;
   root["duty"] = _duty;
-  root["level"] = _level;
 
 //  Serial.print("Writing to file: ");
 //  Serial.println(_filename);
@@ -172,7 +166,6 @@ void LED::_loadConfig() {
       _state = root["state"];
       _period = root["period"];
       _duty = root["duty"];
-      _level = root["level"];
 
       LED::state(_state);
       LED::_onOffTime();
@@ -190,7 +183,6 @@ void LED::configJSON(char* outString, int size) {
   root["state"] = _state;
   root["period"] = _period;
   root["duty"] = _duty;
-  root["level"] = _level;
 
   root.printTo(outString,size);
 }
