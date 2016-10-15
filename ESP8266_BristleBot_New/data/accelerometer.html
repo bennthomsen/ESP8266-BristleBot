@@ -36,9 +36,8 @@
         </style>
         
         <!-- Script that allows connection with BristleBot -->
-        <script src="scripts.js"></script>
         <script>
-            
+            var motorEnable = false;
             
         function setupWebSocket() {
             //var host = window.location.hostname;
@@ -59,6 +58,56 @@
             connection.onerror = function(evt) {
                 console.log("ERROR: " + evt.data);
             };
+        }
+        
+        function motorOnOff() {
+            var el = document.getElementById("motorSwitch");
+            var label = document.getElementById("motorLabel");
+            if (!motorEnable) {
+                motorEnable = true;
+                el.style.backgroundColor = "green";
+                label.innerHTML = "&nbsp;&nbsp;Stop Motors&nbsp;&nbsp;&nbsp;";
+                WSSend("SET:DRI:ENA1");
+            }
+            else {
+                motorEnable = false;
+                el.style.backgroundColor = "#555555";
+                label.innerHTML = "&nbsp;&nbsp;Start Motors&nbsp;&nbsp;";
+                WSSend("SET:DRI:ENA0");
+            }
+            
+        }
+        
+        function motorOnOff() {
+            var el = document.getElementById("motorSwitch");
+            var label = document.getElementById("motorLabel");
+            if (!motorEnable) {
+                motorEnable = true;
+                el.style.backgroundColor = "green";
+                label.innerHTML = "&nbsp;&nbsp;Stop Motors&nbsp;&nbsp;&nbsp;";
+                WSSend("SET:DRI:ENA1");
+            }
+            else {
+                motorEnable = false;
+                el.style.backgroundColor = "#555555";
+                label.innerHTML = "&nbsp;&nbsp;Start Motors&nbsp;&nbsp;";
+                WSSend("SET:DRI:ENA0");
+            }
+            
+        }
+        
+        function updatePower(newValue)
+        {
+            console.log("Setting Power to: " +newValue);
+            WSSend("SET:DRI:POW"+newValue);
+            WSSend("SET:DRI:ENA1");
+        }
+        
+        function updateSteer(newValue)
+        {
+            console.log("Setting Steering to: " +newValue);
+            WSSend("SET:DRI:STE"+newValue);
+            WSSend("SET:DRI:ENA1");
         }
         
         window.onload = setupWebSocket;
@@ -149,7 +198,7 @@
                 }
                 if (Math.abs(old_steer-steer) > update_threshold) {
                     old_steer = steer;
-                    updatePower(steer);
+                    updateSteer(steer);
                 }
   
             }
@@ -177,9 +226,7 @@
             <hr color="grey" width="90%" size="1px">
             <table>
                 <tr>
-                    <td><button class="pushbutton" onclick="startMotors()"><span>Start</span></td>
-                    <td></td>
-                    <td><button class="pushbutton" onclick="stopMotors()"><span>Stop</span></td>
+                    <td colspan="3"><button class="pushbutton" id="motorSwitch" onclick="motorOnOff()"><span id="motorLabel">&nbsp;&nbsp;Start Motors&nbsp;&nbsp;</span></td>
                 </tr>
             </table>
             <hr color="grey" width="90%" size="1px">
