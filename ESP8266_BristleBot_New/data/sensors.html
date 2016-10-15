@@ -121,17 +121,15 @@
             <table border="0">
                 <tr>
                     <td colspan="3"  class="left_align"><b>Proximity Sensor Settings </b></td>
-                    <td><button class="pushbutton" onclick="updateProxThres()"><span>Update</span></td>
-                </tr>
-                <tr>
-                    <td>Refresh rate (ms)</td>
-                    <td><input type="number" id= "refreshRate" max="10000" min="500" step="1"/></td>
-                    
-                    <td>Sample rate (ms)</td>
-                    <td><input type="number" id= "sampleRate" max="10000" min="200" step="1"/></td>
+                    <td><button class="pushbutton" onclick="updateProxThres()"><span>Update Settings</span></td>
                 </tr>
             </table>
-            <hr color="grey" width="90%" size="1px">
+            <table>
+                <tr>
+                    <td>Sample&nbsp;<input type="number" id= "sampleRate" max="10000" min="200" step="1"/>&nbsp;and display&nbsp;<input type="number" id= "refreshRate" max="10000" min="500" step="1"/>&nbsp;period (ms)</td>
+                    
+                </tr>
+            </table>
             <table border="0">
                 <tr>
                     <td colspan="3"  class="left_align"><b>Proximity Sensor Readings </b></td>
