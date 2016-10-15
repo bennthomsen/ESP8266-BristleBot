@@ -6,6 +6,7 @@
                 <title>BristleBot - Actuators</title>
                 <script>
                     var motorEnable = false;
+                    var LEDState = 0;
                     
                     function setupWebSocket() {
                         //var host = window.location.hostname;
@@ -15,6 +16,7 @@
                         connection.onopen = function(evt) {
                             console.log("CONNECTED");
                             document.getElementById("outputTextStatus").innerHTML = "CONNECTED";
+                            getLED(document.getElementById("led"));
                         };
                         connection.onclose = function(evt) {
                             console.log("DISCONNECTED");
@@ -31,8 +33,34 @@
                                 if (Number(obj.right.limit) == 1) document.getElementById("rightLimit").className = "indicator_off";
                                 else document.getElementById("rightLimit").className = "indicator_on";
                             }
-                            catch(err) {console.log("ERROR: " + err.message)}
+                            catch(err) {}
                             
+                            try {
+                                if (obj.period) document.getElementById("period").value = obj.period;
+                                if (obj.duty) document.getElementById("duty").value = 100*obj.duty;
+                                switch (obj.state) {
+                                    case 0:
+                                    document.getElementById("blinkSwitch").style.backgroundColor = "#555555";
+                                    document.getElementById("LEDSwitch").style.backgroundColor = "#555555";
+                                    document.getElementById("LEDLabel").innerHTML = "On";
+                                    LEDState = 0;
+                                    break;
+                                    case 1:
+                                    document.getElementById("blinkSwitch").style.backgroundColor = "#555555";
+                                    document.getElementById("LEDSwitch").style.backgroundColor = "green";
+                                    document.getElementById("LEDLabel").innerHTML = "Off";
+                                    LEDState = 1;
+                                    break;
+                                    case 2:
+                                    document.getElementById("blinkSwitch").style.backgroundColor = "green";
+                                    document.getElementById("LEDSwitch").style.backgroundColor = "#555555";
+                                    document.getElementById("LEDLabel").innerHTML = "On";
+                                    LEDState = 2;
+                                    break;
+                            	}
+                                console.log(LEDState);
+                            }
+                            catch(err) {}
                             
                             try {
                                 document.getElementById("outputTextBattery").innerHTML = obj.battery;
@@ -46,19 +74,59 @@
                 var Cmd = ["RED", "BLU", "IRF", "IRR"];
                 var Action = ["BLI", "ENA", "DIS"];
                 
-                function LEDBlink() {
-                    var e = document.getElementById("led");
-                    WSSend("SET:" + Cmd[e.selectedIndex] +":BLI");
+                function LEDToggleBlink() {
+                    switch (LEDState) {
+                        case 0:
+                        case 1:
+                        LEDState = 2;
+                        document.getElementById("LEDSwitch").style.backgroundColor = "#555555";
+                        document.getElementById("LEDLabel").innerHTML = "On";
+                        document.getElementById("blinkSwitch").style.backgroundColor = "green";
+                        WSSend("SET:" + Cmd[document.getElementById("led").selectedIndex] +":BLI");
+                        break;
+                        case 2:
+                        LEDState = 0;
+                        document.getElementById("LEDSwitch").style.backgroundColor = "#555555";
+                        document.getElementById("LEDLabel").innerHTML = "On";
+                        document.getElementById("blinkSwitch").style.backgroundColor = "#555555";
+                        WSSend("SET:" + Cmd[document.getElementById("led").selectedIndex] +":DIS");
+                        break;
+                    }
                 }
                 
-                function LEDOn() {
-                    var e = document.getElementById("led");
-                    WSSend("SET:" + Cmd[e.selectedIndex] +":ENA");
+                function LEDOnOff() {
+                    switch (LEDState) {
+                        case 0:
+                        case 2:
+                        LEDState = 1;
+                        document.getElementById("LEDSwitch").style.backgroundColor = "green";
+                        document.getElementById("LEDLabel").innerHTML = "Off";
+                        WSSend("SET:" + Cmd[document.getElementById("led").selectedIndex] +":ENA");
+                        break;
+                        case 1:
+                        LEDState = 0;
+                        document.getElementById("LEDSwitch").style.backgroundColor = "#555555";
+                        document.getElementById("LEDLabel").innerHTML = "On";
+                        WSSend("SET:" + Cmd[document.getElementById("led").selectedIndex] +":DIS");
+                    }
                 }
                 
-                function LEDOff() {
+                
+                function getLED(sel) {
+                    WSSend("GET:" + Cmd[sel.selectedIndex]);
+                }
+                
+                function updateLED() {
+                    var Obj = {"period": 350,"duty": 0.5};
+                    
                     var e = document.getElementById("led");
-                    WSSend("SET:" + Cmd[e.selectedIndex] +":DIS");
+                    //var led = e.options[e.selectedIndex].value;
+                    console.log(e.selectedIndex);
+                    
+                    Obj.period = Number(document.getElementById("period").value);
+                    Obj.duty = Number(document.getElementById("duty").value)/100;
+                    
+                    WSSend("SET:" + Cmd[e.selectedIndex] +":CAL:" + JSON.stringify(Obj));
                 }
                 
                 function updateMotorPowerCal() {
@@ -136,19 +204,25 @@
                 <table border="0">
                     <tr>
                         <th class="left_align">LED</th>
-                    </tr>
-                    <tr>
                         <td class="left_align">
-                            <select name="LED" id= "led">
+                            <select name="LED" id= "led" onchange="getLED(this)">
                             <option value="red">Rear (Red/Blue)</option>
                             <option value="blue">Front (Blue)</option>
                             <option value="ir">IR front</option>
                             <option value="ir">IR back</option>
                         </select>
                         </td>
-                        <td><button class="pushbutton" onclick="LEDOn()"><span>On</span></td>
-                        <td><button class="pushbutton" onclick="LEDOff()"><span>Off</span></td>
-                        <td><button class="pushbutton" onclick="LEDBlink()"><span>Blink</span></td>
+                        <td></td>
+                        <td><button class="pushbutton" id="LEDSwitch" onclick="LEDOnOff()"><span id="LEDLabel">On</span></td>
+                        <td><button class="pushbutton" id="blinkSwitch" onclick="LEDToggleBlink()"><span id="blinkLabel">Blink</span></td>
+                        <td class="right_align"><button class="pushbutton" onclick="updateLED()"><span>Update</span></td>
+                    </tr>
+                    </table>
+                <table>
+                    <tr>
+                        <th>Settings:</th>
+                        <td>Period&nbsp;<input type="number" id= "period" max="10000" min="0" step="1"/>&nbsp;ms</td>
+                        <td>Duty cycle&nbsp;<input type="number" id= "duty" max="100" min="0" step="1"/>&nbsp;%</td>
                     </tr>
                 </table>
                 <hr color="grey" width="90%" size="1px">
@@ -158,7 +232,7 @@
                     </tr>
                     <tr>
                         <td style="width:20%" rowspan="4"><input type="range" id= "inputSliderLeft" min="0" max="255" value="0" step="1" oninput="setLeftMotor(this.value)" class="vertical" orient="vertical"/></td>
-                        <td colspan="3"><button class="pushbutton" onclick="updateMotorPowerCal()"><span>Save Power levels for straight travel</span></td>
+                        <td colspan="3"><button class="pushbutton" onclick="updateMotorPowerCal()"><span>Save current power levels for straight travel</span></td>
                         <td style="width:20%" rowspan="4"><input type="range" id= "inputSliderRight" min="0" max="255" value="0" step="1" oninput="setRightMotor(this.value)" class="vertical" orient="vertical"/></td>
                     </tr>
                     <tr>
