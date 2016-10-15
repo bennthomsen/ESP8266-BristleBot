@@ -158,10 +158,13 @@
                     </tr>
                     <tr>
                         <td style="width:20%" rowspan="4"><input type="range" id= "inputSliderLeft" min="0" max="255" value="0" step="1" oninput="setLeftMotor(this.value)" class="vertical" orient="vertical"/></td>
+                        <td colspan="3"><button class="pushbutton" onclick="updateMotorPowerCal()"><span>Save Power levels for straight travel</span></td>
+                        <td style="width:20%" rowspan="4"><input type="range" id= "inputSliderRight" min="0" max="255" value="0" step="1" oninput="setRightMotor(this.value)" class="vertical" orient="vertical"/></td>
+                    </tr>
+                    <tr>
                         <td style="width:15%"></td>
                         <td style="width:15%"><b>Left:</b></td>
                         <td style="width:15%"><b>Right:</b></td>
-                        <td style="width:20%" rowspan="4"><input type="range" id= "inputSliderRight" min="0" max="255" value="0" step="1" oninput="setRightMotor(this.value)" class="vertical" orient="vertical"/></td>
                     </tr>
                     <tr>
                         <td style="width:15%"><b>Power:</b></td>
@@ -169,22 +172,12 @@
                         <td style="width:15%"><span id="outputTextRight">0</span></td>
                     </tr>
                     <tr>
-                        <td colspan="3"></td>
-                    </tr>
-                    <tr>
-                        <td colspan="3"><button class="pushbutton" onclick="updateMotorPowerCal()"><span>Save Power levels for straight travel</span></td>
+                        <td colspan="3"><button class="pushbutton" id="motorSwitch" onclick="motorOnOff()"><span id="motorLabel">Start Motors</span></td>
                     </tr>
                     <tr>
                         <td>Left Power</td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
+                         <td colspan="3"></td>
                         <td>Right Power</td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                        <td colspan="3"><button class="pushbutton" id="motorSwitch" onclick="motorOnOff()"><span id="motorLabel">Start Motors</span></td>
-                        <td></td>
                     </tr>
                     
                 </table>
