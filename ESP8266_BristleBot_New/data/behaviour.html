@@ -8,6 +8,7 @@
         <script>
             var States = 4;
             var Events = 6;
+            var runEnable = false;
             
             function setupWebSocket() {
                 //var host = window.location.hostname;
@@ -68,16 +69,20 @@
             WSSend("SET:DRI:FSM:" + JSON.stringify(obj));
         }
         
-        
-        
-        function runProgram()
-        {
-            WSSend("SET:DRI:STA1");
-        }
-        
-        function stopProgram()
-        {
-            WSSend("SET:DRI:STA0");
+        function runStop() {
+            if (!runEnable) {
+                runEnable = true;
+                document.getElementById("runSwitch").style.backgroundColor = "green";
+                document.getElementById("runLabel").innerHTML = "&nbsp;&nbsp;Stop&nbsp;&nbsp;";
+                WSSend("SET:DRI:STA1");
+            }
+            else {
+                runEnable = false;
+                document.getElementById("runSwitch").style.backgroundColor = "#555555";
+                document.getElementById("runLabel").innerHTML = "&nbsp;&nbsp;Run&nbsp;&nbsp;&nbsp;";
+                WSSend("SET:DRI:STA0");
+            }
+            
         }
         
         function recall()
@@ -385,8 +390,7 @@
             <table>
                 <tr>
                     <td><button class="pushbutton" onclick="program()"><span>Program</span></td>
-                    <td><button class="pushbutton" onclick="runProgram()"><span>Run</span></td>
-                    <td><button class="pushbutton" onclick="stopProgram()"><span>Stop</span></td>
+                    <td><button class="pushbutton" id="runSwitch" onclick="runStop()"><span id="runLabel">&nbsp;&nbsp;Run&nbsp;&nbsp;</span></td>
                 </tr>
             </table>
             <hr color="grey" width="90%" size="1px">
