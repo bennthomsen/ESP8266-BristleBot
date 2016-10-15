@@ -204,6 +204,8 @@
                 <table border="0">
                     <tr>
                         <th class="left_align">LED</th>
+                    </tr>
+                    <tr>
                         <td class="left_align">
                             <select name="LED" id= "led" onchange="getLED(this)">
                             <option value="red">Rear (Red/Blue)</option>
@@ -220,7 +222,7 @@
                     </table>
                 <table>
                     <tr>
-                        <th>Settings:</th>
+                        <th class="left_align">Set:</th>
                         <td>Period&nbsp;<input type="number" id= "period" max="10000" min="0" step="1"/>&nbsp;ms</td>
                         <td>Duty cycle&nbsp;<input type="number" id= "duty" max="100" min="0" step="1"/>&nbsp;%</td>
                     </tr>
