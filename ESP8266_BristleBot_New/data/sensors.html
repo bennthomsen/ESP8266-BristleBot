@@ -58,11 +58,13 @@
                 };
             }
         function updateProxThres() {
-            var proxObject = {"threshold":{"left":120,"right":120},"refresh":1000,"rate":500};
+            var proxObject = {"threshold":{"left":120,"right":120},"refresh":1000,"rate":500,"cycles":7500,"level":1};
             proxObject.threshold.left = Number(document.getElementById("leftThreshold").value);
             proxObject.threshold.right = Number(document.getElementById("rightThreshold").value);
             proxObject.refresh = Number(document.getElementById("refreshRate").value);
             proxObject.rate = Number(document.getElementById("sampleRate").value);
+            proxObject.cycles = Number(document.getElementById("cycles").value);
+            proxObject.level = Number(document.getElementById("level").value);
             WSSend("SET:PRO:PRO:" + JSON.stringify(proxObject));
         }
         
@@ -73,12 +75,15 @@
                 enable = true;
                 el.style.backgroundColor = "green";
                 label.innerHTML = "&nbsp;&nbsp;Stop&nbsp;&nbsp;&nbsp;";
+                WSSend("SET:PRO:REP1");
             	WSSend("SET:PRO:ENA1");
+                
             }
             else {
                 enable = false;
                 el.style.backgroundColor = "#555555";
                 label.innerHTML = "&nbsp;&nbsp;Start&nbsp;&nbsp;";
+                WSSend("SET:PRO:REP0");
                 WSSend("SET:PRO:ENA0");
             }
             

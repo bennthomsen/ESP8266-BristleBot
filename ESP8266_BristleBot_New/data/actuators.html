@@ -17,6 +17,7 @@
                             console.log("CONNECTED");
                             document.getElementById("outputTextStatus").innerHTML = "CONNECTED";
                             getLED(document.getElementById("led"));
+                            WSSend("GET:DRI");
                         };
                         connection.onclose = function(evt) {
                             console.log("DISCONNECTED");
@@ -25,15 +26,6 @@
                         connection.onmessage = function(evt) {
                             console.log('Server: ', evt.data);
                             obj = JSON.parse(evt.data);
-                            try {
-                                document.getElementById("leftProx").innerHTML = obj.left.value;
-                                document.getElementById("rightProx").innerHTML = obj.right.value;
-                                if (Number(obj.left.limit) == 1) document.getElementById("leftLimit").className = "indicator_off";
-                                else document.getElementById("leftLimit").className = "indicator_on";
-                                if (Number(obj.right.limit) == 1) document.getElementById("rightLimit").className = "indicator_off";
-                                else document.getElementById("rightLimit").className = "indicator_on";
-                            }
-                            catch(err) {}
                             
                             try {
                                 if (obj.period) document.getElementById("period").value = obj.period;
@@ -63,7 +55,8 @@
                             catch(err) {}
                             
                             try {
-                                document.getElementById("outputTextBattery").innerHTML = obj.battery;
+                                document.getElementById("leftMax").value = obj.leftMax;
+                                document.getElementById("rightMax").value = obj.rightMax;
                             }
                             catch(err) {}
                         };
@@ -135,6 +128,9 @@
                     console.log("Setting Motor Maximum Power to (L,R): " + left + ", " + right);
                     WSSend("SET:DRI:LMA" + left);
                     WSSend("SET:DRI:RMA" + right);
+                    document.getElementById("leftMax").value = left;
+                    document.getElementById("rightMax").value = right;
+                    
                 }
                 
                 function setLeftMotor(newValue)
@@ -228,24 +224,27 @@
                     </tr>
                 </table>
                 <hr color="grey" width="90%" size="1px">
-                <table border="0">
+                <table border="1">
                     <tr>
                         <th colspan="3" class="left_align">Vibration Motors</th>
+                        <td colspan="2"><button class="pushbutton" onclick="updateMotorPowerCal()"><span>Save Calibration</span></td>
                     </tr>
                     <tr>
                         <td style="width:20%" rowspan="4"><input type="range" id= "inputSliderLeft" min="0" max="255" value="0" step="1" oninput="setLeftMotor(this.value)" class="vertical" orient="vertical"/></td>
-                        <td colspan="3"><button class="pushbutton" onclick="updateMotorPowerCal()"><span>Save current power levels for straight travel</span></td>
-                        <td style="width:20%" rowspan="4"><input type="range" id= "inputSliderRight" min="0" max="255" value="0" step="1" oninput="setRightMotor(this.value)" class="vertical" orient="vertical"/></td>
-                    </tr>
-                    <tr>
                         <td style="width:15%"></td>
                         <td style="width:15%"><b>Left:</b></td>
                         <td style="width:15%"><b>Right:</b></td>
+                        <td style="width:20%" rowspan="4"><input type="range" id= "inputSliderRight" min="0" max="255" value="0" step="1" oninput="setRightMotor(this.value)" class="vertical" orient="vertical"/></td>
                     </tr>
                     <tr>
-                        <td style="width:15%"><b>Power:</b></td>
-                        <td style="width:15%"><span id="outputTextLeft">0</span></td>
-                        <td style="width:15%"><span id="outputTextRight">0</span></td>
+                        <td><b>Cal:</b></td>
+                        <td><input type="number" id= "leftMax" max="255" min="0" step="1"/></td>
+                        <td><input type="number" id= "rightMax" max="255" min="0" step="1"/></td>
+                    </tr>
+                    <tr>
+                        <td><b>Power:</b></td>
+                        <td class="left_align"><span id="outputTextLeft">0</span></td>
+                        <td class="left_align"><span id="outputTextRight">0</span></td>
                     </tr>
                     <tr>
                         <td colspan="3"><button class="pushbutton" id="motorSwitch" onclick="motorOnOff()"><span id="motorLabel">Start Motors</span></td>

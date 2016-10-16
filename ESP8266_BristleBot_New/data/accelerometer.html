@@ -61,53 +61,42 @@
         }
         
         function motorOnOff() {
-            var el = document.getElementById("motorSwitch");
-            var label = document.getElementById("motorLabel");
             if (!motorEnable) {
                 motorEnable = true;
-                el.style.backgroundColor = "green";
-                label.innerHTML = "&nbsp;&nbsp;Stop Motors&nbsp;&nbsp;&nbsp;";
+                document.getElementById("motorSwitch").style.backgroundColor = "green";
+                document.getElementById("motorLabel").innerHTML = "&nbsp;&nbsp;Stop Motors&nbsp;&nbsp;&nbsp;";
                 WSSend("SET:DRI:ENA1");
             }
             else {
                 motorEnable = false;
-                el.style.backgroundColor = "#555555";
-                label.innerHTML = "&nbsp;&nbsp;Start Motors&nbsp;&nbsp;";
+                document.getElementById("motorSwitch").style.backgroundColor = "#555555";
+                document.getElementById("motorLabel").innerHTML = "&nbsp;&nbsp;Start Motors&nbsp;&nbsp;";
                 WSSend("SET:DRI:ENA0");
-            }
-            
-        }
-        
-        function motorOnOff() {
-            var el = document.getElementById("motorSwitch");
-            var label = document.getElementById("motorLabel");
-            if (!motorEnable) {
-                motorEnable = true;
-                el.style.backgroundColor = "green";
-                label.innerHTML = "&nbsp;&nbsp;Stop Motors&nbsp;&nbsp;&nbsp;";
-                WSSend("SET:DRI:ENA1");
-            }
-            else {
-                motorEnable = false;
-                el.style.backgroundColor = "#555555";
-                label.innerHTML = "&nbsp;&nbsp;Start Motors&nbsp;&nbsp;";
-                WSSend("SET:DRI:ENA0");
-            }
-            
+            }            
         }
         
         function updatePower(newValue)
         {
             console.log("Setting Power to: " +newValue);
             WSSend("SET:DRI:POW"+newValue);
-            WSSend("SET:DRI:ENA1");
         }
         
         function updateSteer(newValue)
         {
             console.log("Setting Steering to: " +newValue);
             WSSend("SET:DRI:STE"+newValue);
-            WSSend("SET:DRI:ENA1");
+        }
+        
+        function WSSend(data){
+            try {
+                console.log("Sending: " + data);
+                connection.send(data);
+            }
+            catch(err) {
+                console.log("ERROR: " + err.message);
+                console.log("Trying to reestablish connection");
+                setupWebSocket();
+            }
         }
         
         window.onload = setupWebSocket;

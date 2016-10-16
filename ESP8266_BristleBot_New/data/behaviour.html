@@ -33,7 +33,7 @@
                                 var event = document.getElementById("state" + row + col);
                                 event.selectedIndex = obj.transitions[row*Events+col];
                             }
-                            document.getElementById("timeOut" + row).value = obj.timeOuts[row];
+                            document.getElementById("timeOut" + row).value = obj.timeOuts[row]/1000;
                         }
                     }
                     catch(err) {console.log("ERROR: " + err.message)}
@@ -61,7 +61,7 @@
                     var event = document.getElementById("state" + row + col);
                     nextState[row*Events+col] = event.selectedIndex;
                 }
-                timeOut[row] = Number(document.getElementById("timeOut" + row).value);
+                timeOut[row] = 1000*Number(document.getElementById("timeOut" + row).value);
             }
             obj.transitions = nextState;
             obj.actions = nextState;
@@ -141,7 +141,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td>TimeOut (ms)</td>
+                    <td>TimeOut (s)</td>
                     <td class="left_align_5px">if (Left Limit) then </td>
                     <td class="left_align_5px"><select id= "state02">
                         <option value="stop">STOP</option>
@@ -152,7 +152,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td><input type="number" id= "timeOut0" max="3600000" min="1" step="1"/></td>
+                    <td><input type="number" id= "timeOut0" max="3600" min="0.01" step="0.01"/></td>
                     <td  class="left_align_5px">if (Right Limit) then </td>
                     <td class="left_align_5px"><select id= "state03">
                         <option value="stop">STOP</option>
@@ -208,7 +208,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td>TimeOut (ms)</td>
+                    <td>TimeOut (s)</td>
                     <td class="left_align_5px">if (Left Limit) then </td>
                     <td class="left_align_5px"><select id= "state12">
                         <option value="stop">STOP</option>
@@ -219,7 +219,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td><input type="number" id= "timeOut1" max="3600000" min="1" step="1"/></td>
+                    <td><input type="number" id= "timeOut1" max="3600" min="0.01" step="0.01"/></td>
                     <td  class="left_align_5px">if (Right Limit) then </td>
                     <td class="left_align_5px"><select id= "state13">
                         <option value="stop">STOP</option>
@@ -275,7 +275,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td>TimeOut (ms)</td>
+                    <td>TimeOut (s)</td>
                     <td class="left_align_5px">if (Left Limit) then </td>
                     <td class="left_align_5px"><select id= "state22">
                         <option value="stop">STOP</option>
@@ -286,7 +286,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td><input type="number" id= "timeOut2" max="3600000" min="1" step="1"/></td>
+                    <td><input type="number" id= "timeOut2" max="3600" min="0.01" step="0.01"/></td>
                     <td  class="left_align_5px">if (Right Limit) then </td>
                     <td class="left_align_5px"><select id= "state23">
                         <option value="stop">STOP</option>
@@ -342,7 +342,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td>TimeOut (ms)</td>
+                    <td>TimeOut (s)</td>
                     <td class="left_align_5px">if (Left Limit) then </td>
                     <td class="left_align_5px"><select id= "state32">
                         <option value="stop">STOP</option>
@@ -353,7 +353,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td><input type="number" id= "timeOut3" max="3600000" min="1" step="1"/></td>
+                    <td><input type="number" id= "timeOut3" max="3600" min="0.01" step="0.01"/></td>
                     <td  class="left_align_5px">if (Right Limit) then </td>
                     <td class="left_align_5px"><select id= "state33">
                         <option value="stop">STOP</option>

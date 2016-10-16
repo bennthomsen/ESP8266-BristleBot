@@ -3,7 +3,7 @@
 
 #include <ArduinoJson.h>
 
-#define SENSORCONFIG_JSON_SIZE (JSON_OBJECT_SIZE(8))
+#define SENSORCONFIG_JSON_SIZE (JSON_OBJECT_SIZE(10))
 
 unsigned long lastSense;
 
@@ -17,6 +17,7 @@ struct IRSensor {
 
 struct Proximity {
   volatile bool enable;
+  volatile bool report;
   bool front;
   long rate;            // sensor sampling rate
   long refreshRate;          // rate at which the sensor streams data
@@ -26,11 +27,12 @@ struct Proximity {
   struct IRSensor right;
 };
 
-Proximity sensors = {false,true,500,2000,7500,1,0,120,0,false,false,0,120,0,false,false};
+Proximity sensors = {false,false,true,500,2000,7500,1,0,120,0,false,false,0,120,0,false,false};
 
 // Function prototypes
 void initialiseProximity();
 void proximityEnable(int val);
+void proximityReport(int val);
 void leftProximity();
 void rightProximity();
 void leftProximityStart();
@@ -51,6 +53,15 @@ void proximityEnable(int val) {
   }
   else {
     sensors.enable= false;
+  }
+}
+
+void proximityReport(int val) {
+  if (val) {
+    sensors.report= true;
+  }
+  else {
+    sensors.report= false;
   }
 }
 
@@ -125,7 +136,7 @@ void proxUpdateConfig(char *data) {
   JsonObject& root = jsonBuffer.parseObject(data);
   
   if (root.success()) {
-    if(root["rate"]) sensors.rate = root["rate"];
+    if(root["rate"] > 750) sensors.rate = root["rate"];
     if(root["refresh"]) sensors.refreshRate = root["refresh"];
     if(root["cycles"]) sensors.cycles = root["cycles"];
     if(root["level"]) sensors.level = root["level"];

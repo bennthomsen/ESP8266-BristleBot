@@ -25,7 +25,7 @@ void sendProximity() {
       else drive.setEvent(CLEAR);
     }
 
-    if ((millis() - lastSend >= sensors.refreshRate) || sensors.left.limit || sensors.right.limit) {
+    if (sensors.report && (millis() - lastSend >= sensors.refreshRate)) {
       lastSend = millis();
       String toSend = "{\"left\":{\"value\":" + String(sensors.left.value) + ",\"limit\":" + String(sensors.left.limit) + "},\"right\":{\"value\":" + String(sensors.right.value) + ",\"limit\":" + String(sensors.right.limit) + "}}";
       webSocket.sendTXT(socketNumber,toSend);
@@ -85,7 +85,7 @@ void sendProximity() {
               webSocket.sendTXT(num, reply);
              }
              if(cmd=="PRO") {
-              char toSend[100];
+              char toSend[256];
               proxConfigJSON(toSend, sizeof(toSend));
               webSocket.sendTXT(num, toSend);
              }
@@ -142,6 +142,7 @@ void sendProximity() {
             if(cmd=="PRO") {
               String val=(text.substring(11,text.length()));
               if (action=="ENA") proximityEnable(val.toInt());
+              else if (action=="REP") proximityReport(val.toInt());
               else if (action=="PRO") proxUpdateConfig((char *) &payload[12]);
             }
           }

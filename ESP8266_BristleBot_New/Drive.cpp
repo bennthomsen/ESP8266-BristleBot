@@ -17,10 +17,12 @@ void Drive::enable(int value) {
   if(value){
     _enable = true;
     Drive::update();
+    Serial.println("Enabling Drive");
   }
   else {
     _enable = false;
     Drive::stop();
+    Serial.println("Disabling Drive");
   } 
 }
 
@@ -63,7 +65,9 @@ void Drive::power(int data) {
   _power = data;
   rightMotor.value((_power*_rightMax) >> 8);
   leftMotor.value((_power*_leftMax) >> 8);
-  Drive::update();   
+  Drive::update();  
+  Serial.print("Setting Power to: ");
+  Serial.println(data);
 }
 
 void Drive::steer(int data) {
@@ -76,7 +80,9 @@ void Drive::steer(int data) {
     rightMotor.value(((256-_steer)*_power*_rightMax) >> 16);  
     leftMotor.value((_power*_leftMax) >> 8);
   }
-  Drive::update(); 
+  Drive::update();
+  Serial.print("Setting Steer to: ");
+  Serial.println(data); 
 }
 
 void Drive::stop() {
@@ -205,6 +211,7 @@ void Drive::fsm(int enable) {
   }
   else {
     _fsm = false;
+    Drive::stop();
     Serial.println("Stopping Program");
   }
 }

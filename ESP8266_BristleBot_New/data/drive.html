@@ -13,37 +13,37 @@
                 var host = "192.168.4.1"
                 console.log("Host: " + host);
                 connection = new WebSocket("ws://" + host + ":81/");
+                
                 connection.onopen = function(evt) {
                     console.log("CONNECTED");
                     document.getElementById("outputTextStatus").innerHTML = "CONNECTED";
+                    WSSend("GET:DRI");
                 };
+                
                 connection.onclose = function(evt) {
                     console.log("DISCONNECTED");
                     document.getElementById("outputTextStatus").innerHTML = "DISCONNECTED";
                 };
+                
                 connection.onmessage = function(evt) {
                     console.log('Server: ', evt.data);
                     obj = JSON.parse(evt.data);
                     try {
-                        document.getElementById("leftProx").innerHTML = obj.left.value;
-                        document.getElementById("rightProx").innerHTML = obj.right.value;
-                        if (Number(obj.left.limit) == 1) document.getElementById("leftLimit").className = "indicator_off";
-                        else document.getElementById("leftLimit").className = "indicator_on";
-                        if (Number(obj.right.limit) == 1) document.getElementById("rightLimit").className = "indicator_off";
-                        else document.getElementById("rightLimit").className = "indicator_on";
+                        document.getElementById("leftMax").value = obj.leftMax;
+                        document.getElementById("rightMax").value = obj.rightMax;
                     }
-                    catch(err) {console.log("ERROR: " + err.message)}
-                    
-                    
-                    try {
-                        document.getElementById("outputTextBattery").innerHTML = obj.battery;
-                    }
-                    catch(err) {}
+                    catch (err) {}
                 };
+                
                 connection.onerror = function(evt) {
                     console.log("ERROR: " + evt.data);
                 };
             }
+        
+        function updateMotorPowerCal() {
+            WSSend("SET:DRI:LMA" + document.getElementById("leftMax").value);
+            WSSend("SET:DRI:RMA" + document.getElementById("rightMax").value);
+        }
         
         function motorOnOff() {
             var el = document.getElementById("motorSwitch");
@@ -52,6 +52,8 @@
                 motorEnable = true;
                 el.style.backgroundColor = "green";
                 label.innerHTML = "&nbsp;&nbsp;Stop Motors&nbsp;&nbsp;&nbsp;";
+                WSSend("SET:DRI:POW"+document.getElementById("inputSliderPower").value);
+                WSSend("SET:DRI:STE"+document.getElementById("inputSliderSteer").value);
                 WSSend("SET:DRI:ENA1");
             }
             else {
@@ -63,29 +65,24 @@
             
         }
         
+        function updatePower(newValue)
+        {
+            console.log("Setting Power to: " +newValue);
+            WSSend("SET:DRI:POW"+newValue);
+        }
+        
+        function updateSteer(newValue)
+        {
+            console.log("Setting Steering to: " +newValue);
+            WSSend("SET:DRI:STE"+newValue);
+        }
+        
         function center(newValue)
         {
             document.getElementById("inputSliderSteer").value = 0;
             WSSend("SET:DRI:STE0");
         }
         
-        function proxEnable() {
-            var el = document.getElementById("proxEnableSwitch");
-            var label = document.getElementById("proxEnableLabel");
-            if (!enable) {
-                enable = true;
-                el.style.backgroundColor = "green";
-                label.innerHTML = "&nbsp;&nbsp;Stop Sensor&nbsp;&nbsp;&nbsp;";
-                WSSend("SET:PRO:ENA1");
-            }
-            else {
-                enable = false;
-                el.style.backgroundColor = "#555555";
-                label.innerHTML = "&nbsp;&nbsp;Start Sensor&nbsp;&nbsp;";
-                WSSend("SET:PRO:ENA0");
-            }
-            
-        }
         
         function WSSend(data){
             try {
@@ -117,7 +114,7 @@
         <div class="title">BristleBot Drive</div>
         <div class="status">Connection status: <span id="outputTextStatus">UNCONNECTED</span></div>
         <hr color="grey" width="90%" size="1px">
-        <p class="justified">Drive works best when the BristleBot is optimised for straight line travel using the <a href="actuators.html" >Actuators window</a></p>
+        <p class="justified">Ensure the <b>Motor Calibration</b> is optimised for straight line travel using the <a href="actuators.html" >Actuators window</a></p>
         <hr color="grey" width="90%" size="1px">
         <center>
             <table  border="0">
@@ -127,23 +124,24 @@
                 <tr>
                     <td style="width:15%" class="left_align" rowspan="5"><input type="range" id= "inputSliderPower" class="vertical" orient="vertical" min="0" max="256" value="0" step="1" oninput="updatePower(this.value)"/></td>
                     <td class="left_align">Max</td>
-                    <th class="left_align" colspan="3">Proximity Sensor</th>
+                    <th class="left_align">Motor Cal</th>
+                    <td colspan="2"><button class="pushbutton" onclick="updateMotorPowerCal()"><span>Adjust Cal.</span></td>
                 </tr>
                 <tr>
                     <td></td>
                     <td class="right_align">Left:</td>
-                    <td style="width:15%" class="right_align"><span id="leftProx">0</span></td>
-                    <td style="width:15%" class="right_align"><span class="indicator_on" id="leftLimit"></span></td>
+                    <td style="width:15%" class="right_align"><input type="number" id= "leftMax" max="255" min="0" step="1"/></td>
+                    <td style="width:15%" class="right_align"></td>
                 </tr>
                 <tr>
                     <td></td>
                     <td class="right_align">Right:</td>
-                    <td style="width:15%" class="right_align"><span id="rightProx">0</span></td>
-                    <td style="width:15%" class="right_align"><span class="indicator_on" id="rightLimit"></span></td>
+                    <td style="width:15%" class="right_align"><input type="number" id= "rightMax" max="255" min="0" step="1"/></td>
+                    <td style="width:15%" class="right_align"></td>
                 </tr>
                 <tr>
                     <td></td>
-                    <td colspan="3"><button class="pushbutton" id="proxEnableSwitch" onclick="proxEnable()"><span id="proxEnableLabel">&nbsp;&nbsp;Start Sensor&nbsp;&nbsp;</span></td>
+                    <td colspan="3"></td>
                     </tr>
                 <tr>
                     <td class="left_align">Min</td>
