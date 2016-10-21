@@ -1,36 +1,38 @@
-#include <WebSocketsServer.h>
-WebSocketsServer webSocket = WebSocketsServer(81);
-
-
 #define SEQUENCE_IDLE 0x00
 #define GET_SAMPLE 0x10
-#define GET_SAMPLE__WAITING 0x12 
+#define GET_SAMPLE__WAITING 0x12
 
-  //----------------------------------------------------------------------- 
+#include <Hash.h>
+
+long lastSend = 0;
+
+  //-----------------------------------------------------------------------
 void sendProximity() {
   if (sensors.left.done & sensors.right.done) {
     sensors.left.done = false;
     sensors.right.done = false;
-    webSocket.sendTXT(socketNumber, "{\"left\":" + String(sensors.left.value) + ",\"right\":" + String(sensors.right.value) + "}");
-  }
-}
+    sensors.left.limit = (sensors.left.value > sensors.left.threshold);
+    sensors.right.limit = (sensors.right.value > sensors.right.threshold);
 
-bool sendConfig(uint8_t num) {
-  File configFile = SPIFFS.open("/config.json", "r");
-  if (!configFile) {
-    Serial.println("Failed to open config file");
-    return false;
-  }
+    if (drive.fsm_en()){
+      if (sensors.left.limit & sensors.right.limit) {
+        drive.setEvent(SENSORSLIMIT);
+      }
+      else if(sensors.left.limit) {
+        drive.setEvent(LEFTSENSORLIMIT);
+      }
+      else if(sensors.right.limit) {
+        drive.setEvent(RIGHTSENSORLIMIT);
+      }
+      else drive.setEvent(CLEAR);
+    }
 
-  size_t size = configFile.size();
-  if (size > 1024) {
-    Serial.println("Config file size is too large");
-    return false;
+    if (sensors.report && (millis() - lastSend >= sensors.refreshRate)) {
+      lastSend = millis();
+      String toSend = "{\"left\":{\"value\":" + String(sensors.left.value) + ",\"limit\":" + String(sensors.left.limit) + "},\"right\":{\"value\":" + String(sensors.right.value) + ",\"limit\":" + String(sensors.right.limit) + "}}";
+      webSocket.sendTXT(socketNumber,toSend);
+    }
   }
-
-  String configData = configFile.readString();
-  Sprintln(configData);
-  webSocket.sendTXT(num, configData);
 }
 
   void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t length) {
@@ -40,160 +42,115 @@ bool sendConfig(uint8_t num) {
           break;
         case WStype_CONNECTED: {
           IPAddress ip = webSocket.remoteIP(num);
-          socketNumber = num; 
+          socketNumber = num;
          }
           break;
         case WStype_TEXT: {
           String text = String((char *) &payload[0]);
-            
-          if(text=="RED_LED_BLINK") {
-             heartbeat_enable = true;
-            Sprintln("Red LED blink");
-            saveConfig();
-           }
 
-          if(text=="RED_LED_ON") {
-            heartbeat_enable = false;
-            digitalWrite(REDLED,LOW);
-            Sprintln("Red LED on");
-            saveConfig();
-           }
+          String cmdtype = text.substring(0,3);
+          if(cmdtype=="GET"){
+            String cmd = text.substring(4,7);
+            Serial.println("GET:" + cmd);
+            if(cmd=="RED") {
+              char toSend[100];
+              red.configJSON(toSend, sizeof(toSend));
+              webSocket.sendTXT(num, toSend);
+              Sprintln("Sending red LED Settings");
+            }
+            if(cmd=="BLU") {
+              char toSend[100];
+              blue.configJSON(toSend, sizeof(toSend));
+              webSocket.sendTXT(num, toSend);
+              Sprintln("Sending blue LED Settings");
+             }
+             if(cmd=="IRF") {
+              char toSend[100];
+              ir.configJSON(toSend, sizeof(toSend));
+              webSocket.sendTXT(num, toSend);
+              Sprintln("Sending front IR LED Settings");
+             }
+             if(cmd=="IRB") {
+              char toSend[100];
+              irRear.configJSON(toSend, sizeof(toSend));
+              webSocket.sendTXT(num, toSend);
+              Sprintln("Sending rear IR LED Settings");
+             }
+             if(cmd=="BAT") {
+              int adc = analogRead(A0);
+              int voltage = (5222*adc) >> 10;
+              String voltageData = "Supply Voltage: " + String(voltage) +"mV";
+              Sprintln(voltageData);
+              String reply = "{\"battery\":";
+              reply += voltage;
+              reply += "}";
+              webSocket.sendTXT(num, reply);
+             }
+             if(cmd=="PRO") {
+              char toSend[256];
+              proxConfigJSON(toSend, sizeof(toSend));
+              webSocket.sendTXT(num, toSend);
+             }
+             if(cmd=="DRI") {
+              char toSend[256];
+              drive.printConfig(toSend, sizeof(toSend));
+              webSocket.sendTXT(num, toSend);
+             }
 
-          if(text=="RED_LED_OFF") {
-            heartbeat_enable = false;
-            digitalWrite(REDLED,HIGH);
-            Sprintln("Red LED off");
-            saveConfig();
-           }
-
-          if(text=="BLUE_LED_BLINK") {
-            digitalWrite(BLUELED,LOW);
-            delay(500);
-            digitalWrite(BLUELED,HIGH);
-            Sprintln("BLUE LED blink");
-           }
-
-          if(text=="BLUE_LED_ON") {
-            digitalWrite(BLUELED,LOW);
-            Sprintln("BLUE LED on");
-           }
-
-          if(text=="BLUE_LED_OFF") {
-            digitalWrite(BLUELED,HIGH);
-            Sprintln("BLUE LED off");
-           }
-
-          if(text=="FRONT_LED_BLINK") {
-            digitalWrite(IRTX,LOW);
-            delay(500);
-            digitalWrite(IRTX,HIGH);
-            Sprintln("FRONT LED blink");
-           }
-
-          if(text=="FRONT_LED_ON") {
-            digitalWrite(IRTX,LOW);
-            Sprintln("FRONT LED on");
-           }
-
-          if(text=="FRONT_LED_OFF") {
-            digitalWrite(IRTX,HIGH);
-            Sprintln("FRONT LED off");
-           }
-
-          if(text=="BATT") {
-            int adc = analogRead(A0);
-            int voltage = (5222*adc) >> 10;
-            String voltageData = "Supply Voltage: " + String(voltage) +"mV";
-            Sprintln(voltageData);
-            String reply = "{\"battery\":";
-            reply += voltage;
-            reply += "}";
-            webSocket.sendTXT(num, reply);
-           }
-
-           if(text=="SETTINGS") {
-            sendConfig(num);
-           }
-
-           if(text=="PROX_SINGLE") {
-            acquireProximity();
-            Sprintln("Proximity Sensor Single");
-           }
-
-           if(text=="PROX_EN") {
-            prox_sensor_run = true;
-            Sprintln("Run Proximity Sensor");
-           }
-
-           if(text=="PROX_DIS") {
-            prox_sensor_run = false;
-            Sprintln("Stop Proximity Sensor");
-           }
-
-           if(text=="AUTO_EN") {
-            autonomous = true;
-            Sprintln("Starting Autonomous operation");
-           }
-
-           if(text=="AUTO_DIS") {
-            autonomous = false;
-            Sprintln("Starting Autonomous operation");
-           }
-           
-          if(text.startsWith("s")) {
-            String xVal=(text.substring(text.indexOf("s")+1,text.length())); 
-            drive.steer(xVal.toInt());
           }
-
-
-           if(text.startsWith("p")){
-            String yVal=(text.substring(text.indexOf("p")+1,text.length())); 
-            drive.power(yVal.toInt());
-           }
-
-           if(text.startsWith("e")){
-            String yVal=(text.substring(text.indexOf("e")+1,text.length()));
-            drive.left.value(yVal.toInt());
-           }
-
-            if(text.startsWith("f")){
-            String yVal=(text.substring(text.indexOf("f")+1,text.length()));
-            drive.right.value(yVal.toInt());
-           }
-
-           if(text=="STOP"){
-             drive.stop();
+          else if (cmdtype=="SET") {
+            String cmd = text.substring(4,7);
+            String action = text.substring(8,11);
+            Serial.println("SET:" + cmd +":" +action);
+            if(cmd=="RED") {
+              if (action=="BLI") red.blinkOn();
+              else if (action=="ENA") red.on();
+              else if (action=="DIS") red.off();
+              else if (action=="CAL") red.updateConfig((char *) &payload[12]);
             }
-
-            if(text.startsWith("r")){
-              String val=(text.substring(text.indexOf("r")+1,text.length())); 
-              drive.right.maximum(val.toInt());
-              saveConfig();
-              Sprintln("Right Threshold: " + val);
-            }    
-
-            if(text.startsWith("l")){
-              String val=(text.substring(text.indexOf("l")+1,text.length())); 
-              drive.left.maximum(val.toInt());
-              saveConfig();
-              Sprintln("Left Threshold: " + val);
+            if(cmd=="BLU") {
+              if (action=="BLI") blue.blinkOn();
+              else if (action=="ENA") blue.on();
+              else if (action=="DIS") blue.off();
+              else if (action=="CAL") blue.updateConfig((char *) &payload[12]);
             }
-
-            if(text.startsWith("a")){
-              String val=(text.substring(text.indexOf("a")+1,text.length())); 
-              sensors.left.threshold = val.toInt();
-              saveConfig();
-              Sprintln("Left Threshold: " + val);
+            if(cmd=="IRF") {
+              if (action=="BLI") ir.blinkOn();
+              else if (action=="ENA") ir.on();
+              else if (action=="DIS") ir.off();
+              else if (action=="CAL") ir.updateConfig((char *) &payload[12]);
             }
-            if(text.startsWith("b")){
-              String val=(text.substring(text.indexOf("b")+1,text.length())); 
-              sensors.right.threshold = val.toInt();
-              saveConfig();
-              Sprintln("Right Threshold: " + val);
+            if(cmd=="IRR") {
+              if (action=="BLI") irRear.blinkOn();
+              else if (action=="ENA") irRear.on();
+              else if (action=="DIS") irRear.off();
+              else if (action=="CAL") irRear.updateConfig((char *) &payload[12]);
             }
+            if(cmd=="DRI") {
+              String val=(text.substring(11,text.length()));
+              if (action=="LEF")      drive.setLeftPower(val.toInt());
+              else if (action=="RIG") drive.setRightPower(val.toInt());
+              else if (action=="LMA") drive.leftMax(val.toInt());
+              else if (action=="RMA") drive.rightMax(val.toInt());
+              else if (action=="STE") drive.steer(val.toInt());
+              else if (action=="POW") drive.power(val.toInt());
+              else if (action=="ENA") drive.enable(val.toInt());
+              else if (action=="FSM") drive.updateConfig((char *) &payload[12]);
+              else if (action=="STA") {
+                proximityEnable(val.toInt());
+                drive.fsm(val.toInt());
+              }
+            }
+            if(cmd=="PRO") {
+              String val=(text.substring(11,text.length()));
+              if (action=="ENA") proximityEnable(val.toInt());
+              else if (action=="REP") proximityReport(val.toInt());
+              else if (action=="PRO") proxUpdateConfig((char *) &payload[12]);
+            }
+          }
         }
         break;
-        
+
         case WStype_BIN:
             hexdump(payload, length);
             // echo data back to browser
@@ -201,6 +158,3 @@ bool sendConfig(uint8_t num) {
             break;
     }
 }
-
-
-

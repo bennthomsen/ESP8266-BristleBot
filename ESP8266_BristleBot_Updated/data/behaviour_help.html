@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="indexstyle.css">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>BristleBot - Help</title>
+        
+    </head>
+    <body>
+        <p id="content">
+
+        <div class="title">BristleBot Help</div>
+        <div class="status">Autonomous operation</div>
+        <hr color="grey" width="90%" size="1px">
+        <p class="justified">The behaviours window lets you program the behaviour of the BristleBot when it drives autonomously.</p>
+        <p class="justified">The BristleBot is capable of doing four things: stopping, moving forward in a straight line, turning left, and turning right. These are known as behaviours. The BristleBot can only carry out one of these behaviours at any given time and this is known as the <b>Current activity</b> or state. The current activity describes what the BristleBot is currently doing and must be one of the four behaviours labelled: STOPPED, FORWARD, TURN LEFT, and TURN RIGHT.</p>
+        <p class="justified">To drive autonomously the BristleBot needs to sense the environment and respond to its sensors or other external events. The events could come from either the user e.g. a command to start driving, or from its proximity sensors e.g. the left sensor limit is set. The BristleBot is able to respond to the following events:</p>
+        <ul>
+            <li><b>Command:</b> A command sent by the user or sent internally e.g. sending the Run command from the App.</li>
+            <li><b>TimeOut:</b> Each behaviour is assigned a duration. When this time period expires the Timeout event will trigger</li>
+            <li><b>Left Limit:</b> The left proximity sensor has sensed an obstacle</li>
+            <li><b>Right Limit:</b> The right proximity sensor has sensed an obstacle</li>
+            <li><b>Both Limits:</b> Both the left and the right proximity sensors have sensed an obstacle</li>
+            <li><b>No Limits:</b> The proximity sensor does not sense any obstacles in front of it</li>
+        </ul>
+        <p class="justified">When one of these events occurs the BristleBot needs to know which of its four behaviours to do next. The dropdown boxes associated with each of the current activities lets you choose what to do when a particular event occurs. For example if the BristleBot is in the <b>FORWARD Activity</b> and the <b>Left Limit Event</b> occurs then to avoid the object that has caused the Left Limit event the best course of action would be to turn right. So you would choose the TURN RIGHT Activity from the dropdown box.</p>
+        <p class="justified"><b>WARNING:</b> Ensure that you specify a new activity for each event for all four current activities, otherwise you might get some unexpected activity.Autonomous drive works best when the BristleBot is first optimised for straight line travel. If this is not already done go to the <a href="actuators.html" >Actuators window</a> to optimise this.</p>
+        <p class="justified">Each activity has a TimeOut variable associated with it. This is used to set the maximum duration for each activity. For example, you may only want the <b>TURN LEFT</b> activity to last for 1s before continuing straight. To achieve this operation you would set the TURN LEFT TimeOut to 1s and the <b>Next Activity</b> associated with the <b>TimeOut Event</b> to <b>FORWARD</b> </p>
+        <hr color="grey" width="90%" size="1px">
+            <img src="logo.png" alt="UCL logo" style="width:197px; height:52px;">
+            </center>
+
+        </p>
+    </body>
+</html>

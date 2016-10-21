@@ -71,7 +71,6 @@
         
         function runStop() {
             if (!runEnable) {
-                program();
                 runEnable = true;
                 document.getElementById("runSwitch").style.backgroundColor = "green";
                 document.getElementById("runLabel").innerHTML = "&nbsp;&nbsp;Stop&nbsp;&nbsp;";
@@ -392,6 +391,7 @@
             
             <table>
                 <tr>
+                    <td><button class="pushbutton" onclick="program()"><span>Program</span></td>
                     <td><button class="pushbutton" id="runSwitch" onclick="runStop()"><span id="runLabel">&nbsp;&nbsp;Run&nbsp;&nbsp;</span></td>
                 </tr>
             </table>
