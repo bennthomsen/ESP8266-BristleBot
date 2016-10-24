@@ -1,3 +1,14 @@
+/* BristleBot Web Controller
+ *  BristleBot ESP8266 firmware for the the web control App.
+ *  The ESP8266 is setup up as a WiFi Access point which you can connect to with any WiFi enabled
+ *  device. 
+ *  HTPP requests to 194.168.4.1 will serve the BristleBot App.
+ *  
+ *  The ESP8266 also runs a Web Socket Server taht handles the communication between the App and the BristleBot 
+ *  
+ *  Benn Thomsen, Oct 2016
+*/
+
 #include <Arduino.h>
 
 /* Main BristleBot Code */
