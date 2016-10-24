@@ -57,15 +57,11 @@ void setup() {
   ir.begin("ir",IRTX,false);            // setup active low front ir LED
   irRear.begin("irrear",IRTXREAR,false);     // setup active low rear ir LED
 
+/* Initialise Drive controller    */ 
   drive.begin("drive"); 
 
-/* Create Access point on ESP8266     */ 
+/* Create Access point on ESP8266 and start Web server    */ 
   configureAccessPoint();
-
-/* Start the HTTP server      */
-  server.onNotFound(handleNotFound);
-  server.begin();
-  Sprintln ( "HTTP server started" );
 
  /* Start the Web Socket server      */ 
   webSocket.begin();
@@ -76,12 +72,12 @@ void setup() {
 void loop() {
     server.handleClient();        // Check for WebServer requests
     webSocket.loop();             // Check for WebSocket requests
-    red.heartbeat();
-    blue.heartbeat();
-    ir.heartbeat();
-    drive.loop();
-    acquireProximity();
-    sendProximity();           // Send updated Proximity reading if available
+    red.heartbeat();              // Execute Red Heartbeat if enabled
+    blue.heartbeat();             // Execute Blue Heartbeat if enabled
+    ir.heartbeat();               // Execute IR Heartbeat if enabled
+    drive.loop();                 // Service Drive operation
+    acquireProximity();           // Start Proximity sensor reading if enabled
+    sendProximity();              // Send updated Proximity sensor reading if available
 }
 
 

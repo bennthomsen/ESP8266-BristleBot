@@ -21,8 +21,8 @@ void setup() {
   
   analogWriteFreq(4000);    // Set the pulse frequency of the PWM motor drive signal
   
-  analogWrite(RIGHTMOTOR,0);  //Set the Right motor power (0-255)
-  analogWrite(LEFTMOTOR,0);   //Set the Left motor power (0-255)
+  analogWrite(RIGHTMOTOR,0);  //Set the Right motor power 0 (Stopped)
+  analogWrite(LEFTMOTOR,0);   //Set the Left motor power 0 (Stopped)
 }
    
 // the loop routine runs over and over again forever:

@@ -69,6 +69,11 @@ void configureAccessPoint() {
   WiFi.softAP(ssid, password);
   IPAddress myIP = WiFi.softAPIP();
   Sprintln("AP IP address: " + myIP);
+
+  /* Start the HTTP server      */
+  server.onNotFound(handleNotFound);
+  server.begin();
+  Sprintln ( "HTTP server started" );
 }
 
 #endif
