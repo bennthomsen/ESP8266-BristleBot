@@ -69,18 +69,25 @@
             WSSend("SET:DRI:FSM:" + JSON.stringify(obj));
         }
         
+        function updatePower(newValue)
+        {
+            console.log("Setting Power to: " +newValue);
+            WSSend("SET:DRI:POW"+newValue);
+        }
+
+        
         function runStop() {
             if (!runEnable) {
                 program();
                 runEnable = true;
                 document.getElementById("runSwitch").style.backgroundColor = "green";
-                document.getElementById("runLabel").innerHTML = "&nbsp;&nbsp;Stop Program&nbsp;&nbsp;";
+                document.getElementById("runLabel").innerHTML = "Stop Program";
                 WSSend("SET:DRI:STA1");
             }
             else {
                 runEnable = false;
                 document.getElementById("runSwitch").style.backgroundColor = "#555555";
-                document.getElementById("runLabel").innerHTML = "&nbsp;&nbsp;Run Program&nbsp;&nbsp;&nbsp;";
+                document.getElementById("runLabel").innerHTML = "Run Program";
                 WSSend("SET:DRI:STA0");
             }
             
@@ -392,7 +399,10 @@
             
             <table>
                 <tr>
-                    <td><button class="pushbutton" id="runSwitch" onclick="runStop()"><span id="runLabel">&nbsp;&nbsp;Run Program&nbsp;&nbsp;</span></td>
+                    <td><b>Power</b> Min</td>
+                    <td><input type="range" id= "inputSliderPower" class="slider-width300" min="-256" max="256" value="0" step="1" oninput="updatePower(this.value)"/></td>
+                    <td>Max</td>
+                    <td><button class="pushbutton" id="runSwitch" onclick="runStop()"><span id="runLabel">Run Program</span></td>
                 </tr>
             </table>
             <hr color="grey" width="90%" size="1px">

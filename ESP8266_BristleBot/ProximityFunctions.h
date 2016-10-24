@@ -27,7 +27,7 @@ struct Proximity {
   struct IRSensor right;
 };
 
-Proximity sensors = {false,false,true,500,2000,7500,1,0,120,0,false,false,0,120,0,false,false};
+Proximity sensors = {false,false,true,1000,1000,10000,1,0,120,0,false,false,0,120,0,false,false};
 
 // Function prototypes
 void initialiseProximity();

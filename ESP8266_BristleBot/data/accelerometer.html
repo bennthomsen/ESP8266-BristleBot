@@ -40,8 +40,6 @@
             var motorEnable = false;
             
         function setupWebSocket() {
-            document.documentElement.requestFullscreen();
-            screen.orientation.lock('portrait').then(null, function(error) {document.exitFullscreen()});
             //var host = window.location.hostname;
             var host = "192.168.4.1";
             console.log("Host: " + host);
