@@ -162,6 +162,12 @@
                         el.style.backgroundColor = "#555555";
                         label.innerHTML = "Start Motors";
                         WSSend("SET:DRI:ENA0");
+                        WSSend("SET:DRI:LEF0");
+                        WSSend("SET:DRI:RIG0");
+                        document.getElementById("outputTextLeft").innerHTML = 0;
+                        document.getElementById("outputTextRight").innerHTML = 0;
+                        document.getElementById("inputSliderLeft").value = 0;
+                        document.getElementById("inputSliderRight").value = 0;
                     }
                     
                 }
