@@ -7,20 +7,23 @@
         
     </head>
     <body>
-        <p id="content">
-
-        <div class="title">BristleBot Get Started</div>
-        <hr color="grey" width="90%" size="1px">
-        <div class="heading1">Actuators</div>
-        <p class="justified">Blah</p>
-        <hr color="grey" width="90%" size="1px">
-        <div class="heading1">Sensors</di
-        <p class="justified">Blah</p>
-        <hr color="grey" width="90%" size="1px">
+        <div class="title">BristleBot Help</div>
+        <hr class="separator">
+        <p class="justified">The Bristle Bot App lets you access and control the BristleBot from any WiFi enabled device. The App is written in HTML5 and is served directly from the BristleBot. To access the App you first need to connect via WiFi to the BristleBot. The BristleBot is configured as a WiFi access point with an SSID of the form "BristleBot_XXXX". Once connected to the BristleBot you can use your browser to navigate to the IP address of the BritleBot: 192.168.4.1</p>
+        <p class="justified"> This will return the main index page of the BristleBot from which you can select the following options</p>
+        <ol>
+        <li><a href="actuators_help.html"><b>Actuators:</b></a> Lets you control the LEDs and Vibration motors</li>
+        <li><a href="sensors_help.html"><b>Sensors:</b></a> Read Battery Voltage and read values from the Proximity Sensors</li>
+        <li><b>Drive:</b> Provides an intuitive interface for driving the BristleBot once the vibration motors have been calibrated using the actuators control</li>
+        
+        <li><b>Accelerometer:</b> Provides an interface that lets you drive the BristleBot by tilting your smartphone using the accelerometer in the phone.</li>
+        
+        <li><b>Behaviour:</b> Lets you program the BristleBot to drive autonomously avoiding obstacles using the inputs from its proximity sensors.</li>
+        </ol>
+        <p class="justified">To communicate with the BristleBot the App opens a web socket connection between your device and the BristleBot. This Status of this connection is shown in the upper left of the App. You need to make sure it indicates "CONNECTED" before trying to send commands to the BristleBot. If it remains "UNCONNECTED", or "DISCONNECTED" for some time try refreshing the page.<p/>
+        <hr class="separator">
         <center>
-        <img src="logo.png" alt="UCL logo" style="width:197px; height:52px;">
+        	<img src="logo.png" alt="UCL logo" style="width:197px; height:52px;">
         </center>
-
-        </p>
     </body>
 </html>

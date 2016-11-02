@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="indexstyle.css">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>BristleBot - Help</title>
+        
+    </head>
+    <body>
+        <div class="title">Actuators Help</div>
+        <hr class="separator">
+        <div class="heading1">LED</div>
+        <p class="justified">The actuators page lets you control the LEDs: Red (on the microprocessor board near the USB connector), Blue (on the microprocessor board next to the WiFi Antenna), Front Infrared (IR) (Forward facing front center) and Rear IR (Rear facing, back center under the USB connector); and the two vibration motors.</p>
+        <p class="justified">To control each LED first use the dropdown menu to select the LED you want to control. The ON/OFF switch toggles the LED between on and off. The BLINK switch enables blinking operation. The blink behaviour of each LED is controlled by the <b>Period</b> and <b>Duty cycle</b> settings. The Period in milliseconds (ms) is the time for one period of the blink cycle (on time + off time). The Duty cycle percentage (%) is the ratio of on time to the period expressed as a percentage. E.g. if the LED is on for 100ms and off for 900ms, then the period is 1000ms (1s) and the duty cycle is 10%. To change the Period and Duty cycle enter new values into the input boxes and press the <b>Update</b> button.</p>
+        <hr class="separator">
+        <div class="heading1">Vibration Motors</div>
+        <p class="justified">To control the motors first press the <b>Start Motors</b> button to enable the motors. Tbe initial motor speed will be set to zero when <b>Start Motors</b> is pressed, so the motors will be stopped. Use the <b>Left</b> and <b>Right</b> Sliders to control the speed the the respective motors. You can stop the motors by pressing the <b>Stop Motors</b> button.
+        <br>
+        The actual motor power setting for each motor is shown in the <b>Power Value</b> display.</p>
+        <p class="justified">The <b>Save Calibration</b> button allows you to save the current power values for both the Left and Right Motors. These calibration values are used by the Drive and Behaviour driving modes to obtain straight line travel. You can use the <b>Save Calibration</b> button to save the displayed power values whilst the motors are running and when stopped. To get good calibration values you should adjust the Left anf Right motor power values so that the BristleBot travels in a straight ahead direction at the fastest speed you would like your BristleBot to move at.<p>
+        <hr class="separator">
+        <center>
+        	<img src="logo.png" alt="UCL logo" style="width:197px; height:52px;">
+        </center>
+    </body>
+</html>

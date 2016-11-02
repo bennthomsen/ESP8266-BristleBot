@@ -1,5 +1,5 @@
 body {
-    width: 100%;
+    width: 90%;
     align-items: center;
     background-color: white;
     margin: 0 auto;
@@ -11,6 +11,12 @@ body {
 p.justified {
     padding-left: 10px;
     padding-right: 10px;
+}
+
+hr.separator {
+    color: grey;
+    width: 100%;
+    size: 1px;
 }
 
 tr.border_top td{
@@ -64,6 +70,7 @@ input {
 
 .heading1 {
     font-size: 14px;
+    font-weight: bold;
     color: #333333;
     font-family: Century Gothic, sans-serif;
     text-align: left;
@@ -117,7 +124,7 @@ a.button:hover span:after {
 
 #content {
     position: absolute;
-    top: 50%;
+    width: 90%;
 }
 
 .pushbutton {

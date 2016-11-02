@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="indexstyle.css">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>BristleBot - Help</title>
+        
+    </head>
+    <body>
+        <div class="title">Sensors Help</div>
+        <hr class="separator">
+        <div class="heading1">Battery Voltage</div>
+        <p class="justified">Pressing Get Battery voltage will return the Battery Voltage in mV. Note if the USB cable is plugged in and the Power Switch is off, isolating the battery from the microcontroller, then the reported voltage will be the voltage after the 3V regulator i.e. approximately 3000mV </p>
+        <hr class="separator">
+        <div class="heading1">Proximity Sensors</div>
+        <p class="justified">The settings for the Proximity Sensors and reading from the proximity sensors are available here. The proximity sensors are used to obtain a measure of the distance between the BristleBot and an object in front of the BristleBot.</p>
+        <p class="justified">The following settings can be made:</p>
+        <ul>
+            <li><b>Sample Period:</b> period at which the proximity sensors are polled to obtain proximity measurments. For stable operation do not set this less than 700ms.</li>
+            <li><b>Display Period:</b> period at which the proximity sensors reading are sent back to the App. This should be a multiple of the Sample Period</li>
+            <li><b>IR LED cycles:</b> this determines the duration of the IR pulse that is emitted by the proximity sensing system. The IR emitter is modulated with a square wave at 38kHz. The cycles parameter sets the number of 38kHz waveform cycles that are transmitted. The default value is 10000, which results in a 263ms duration IR pulse.</li>
+            <li><b>IR LED brightness:</b> this sets the duty cycle of the square wave with 1 corresponding to the minimum and 12 to the maximum brightness</li>
+            </ul>
+        <p class="justified">The sensor can be enabled and disabled using the Start/Stop button. Note if you navigate away from this page whilst the sensor is enabled it will continue to operate.</p>
+        <p class="justified">The threshold input boxes allow you to set the level at which the limit indicators are triggered for the left and right proximity sensors. These limits are also used by the Autonomous driving program.</p>
+        <hr class="separator">
+        <center>
+        	<img src="logo.png" alt="UCL logo" style="width:197px; height:52px;">
+        </center>
+    </body>
+</html>
