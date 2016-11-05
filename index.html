@@ -1,99 +1,53 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <title>Index - BristleBot</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-    body {
-        width: 100%;
-        align-items: center;
-        background-color: white;
-        margin: 0 auto;
-        font-family: "Arial";
-        font-size: 14px;
-        margin-top: 2%;
-    }
-    
-    #content {
-    	width:360px;
-        position:absolute;
-        top:50%;
-    }
-    
-    .title {
-        font-size: 30px;
-        color: #333333;
-        font-family: Century Gothic, sans-serif;
-        text-align: center;
-        padding-top: 5px;
-    }
-    
-    
-    .button {
-        display: inline-block;
-        border-radius: 4px;
-        background-color: #f4511e;
-        border: none;
-        color: #FFFFFF;
-        text-align: center;
-        font-size: 16px;
-        padding: 2px;
-        width: 50px;
-        transition: all 0.5s;
-        cursor: pointer;
-        margin: 2px;
-    }
-    
-    .button span {
-        cursor: pointer;
-        display: inline-block;
-        position: relative;
-        transition: 0.5s;
-    }
-    
-    .button span:after {
-        content: '>';
-        position: absolute;
-        opacity: 0;
-        top: 0;
-        right: -20px;
-        transition: 0.5s;
-    }
-    
-    .button:hover span {
-        padding-right: 25px;
-    }
-    
-    .button:hover span:after {
-        opacity: 1;
-        right: 0;
-    }
-    
-        </style>
-	
-</head>
-<body>
-<p id="content">
-		<center>
-		<div class="title">Bristle Bot</div>
-		<hr color="grey" width="90%" size="1px">
-		
-		Links to web pages for testing
-		<br>
-        <br>
-		<table border="0">
-            		<tr>
-				<td><b>BristleBot Web interface:</b></td>
-				<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
-				<td><a href="/ESP8266-BristleBot/ESP8266_BristleBot/data/index.html" class="button"><span>Go</span></a></td>
-			</tr>
-			<tr>
-			</tr>
-			
-		</table>
-		<hr color="grey" width="90%" size="1px">
-		<img src="logo.png" alt="UCL logo" style="width:197px; height:52px;">
-	</center>
-</p>
-</body>
+
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="Benn Thomsen : Webpages">
+
+    <link rel="stylesheet" type="text/css" media="screen" href="WebPages/stylesheets/stylesheet.css">
+
+    <title>Benn Thomsen</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/bennthomsen">View on GitHub</a>
+
+          <h1 id="project_title">Benn Thomsen</h1>
+          <h2 id="project_tagline">BristleBot</h2>
+
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h2>
+<a id="main-page" class="anchor" href="#main-page" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a></h2>
+
+        <h3><a href="https://github.com/bennthomsen/ESP8266-BristleBot/releases/latest">Latest Release</a></h3>
+        <p>Get the latest BristleBot Sketches and Preconfigured Arduino IDE</p>
+        <h3><a href="https://github.com/bennthomsen/ESP8266-BristleBot/wiki">BristleBot Wiki</a></h3>
+        <p>Getting started user guide and other information</p>
+        <h3><a href="/ESP8266-BristleBot/ESP8266_BristleBot/data/index.html">BristleBot App Demo</a></h3>
+        <p>Try out the BristleBot App</p>
+
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p>&copy; 2016 Benn Thomsen </a></p>
+      </footer>
+    </div>
+
+
+
+  </body>
 </html>
