@@ -9,3 +9,5 @@ BristleBot Schematic and PCB layout DipTrace files
 The release includes the sketches and a portable version of the Arduino IDE that has been preconfigured with the required boards and additional libraries.
 
 It is also necessary to install the Silicon Labs CP2102 USB to UART Bridge driver for your operating system.
+
+For Further infomation see the [BristleBot Wiki](https://github.com/bennthomsen/ESP8266-BristleBot/wiki)
