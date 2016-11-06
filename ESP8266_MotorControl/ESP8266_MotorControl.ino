@@ -11,15 +11,12 @@
 #define RIGHTMOTOR 15
 #define LEFTMOTOR 5
 
-
 void setup() {                
   // initialize the digital pin as an output.
   pinMode(REDLED, OUTPUT);   
   pinMode(RIGHTMOTOR, OUTPUT); 
   pinMode(LEFTMOTOR, OUTPUT); 
-  
   analogWriteFreq(400);         // Set the pulse frequency of the PWM motor drive signal
-  
   analogWrite(RIGHTMOTOR,100);  //Set the Right motor power (0-255)
   analogWrite(LEFTMOTOR,100);   //Set the Left motor power (0-255)
 }
